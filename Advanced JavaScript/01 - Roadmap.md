@@ -125,45 +125,47 @@ If a later topic feels slippery, the answer is usually not "read harder." It is 
 
 ## Full Learning Path
 
-| Phase | Module                                                                       | Priority                          | Outcome    | Dependencies                                                                                                                                                  |                                        |
-| ----- | ---------------------------------------------------------------------------- | --------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| 0     | [[00 - Start Here                                                            | Start Here]]                      | #must-know | Know how to study the vault and verify source-backed learning.                                                                                                | None                                   |
-| 1     | [[02 - JavaScript Runtime Foundations/01 - ECMAScript vs JavaScript          | Runtime Foundations]]             | #must-know | Separate language, engine, runtime, host APIs, stack, heap, realms, and jobs.                                                                                 | Start Here                             |
-| 2     | [[03 - Scope and Variables/01 - Scope Types                                  | Scope and Variables]]             | #must-know | Explain bindings, lexical environments, hoisting, TDZ, closures, and closure bugs.                                                                            | Runtime Foundations                    |
-| 3     | [[04 - Functions Deep Dive/01 - Function Declarations vs Expressions         | Functions Deep Dive]]             | #must-know | Understand functions as values, callbacks, purity, parameters, currying, debounce, and throttle.                                                              | Scope and Variables                    |
-| 4     | [[05 - this Binding/01 - What is this                                        | this Binding]]                    | #must-know | Explain receiver binding, strict mode, arrows, bind/call/apply, constructors, and React class examples.                                                       | Functions                              |
-| 5     | [[06 - Objects and Prototypes/01 - Objects Internally                        | Objects and Prototypes]]          | #important | Explain descriptors, prototypes, constructors, classes, copying, and identity.                                                                                | Runtime + this                         |
-| 6     | [[07 - Arrays and Iteration/01 - Array Internals                             | Arrays and Iteration]]            | #must-know | Transform UI data safely while avoiding mutation and avoidable render cost.                                                                                   | Functions + Objects                    |
-| 7     | [[08 - Async JavaScript/01 - Sync vs Async JavaScript                        | Async JavaScript]]                | #must-know | Model promises, async/await, errors, cancellation, API integration, and stale results.                                                                        | Closures + Functions                   |
-| 8     | [[09 - Event Loop Advanced/01 - Event Loop Overview                          | Event Loop Advanced]]             | #must-know | Trace tasks, microtasks, promise jobs, timers, animation frames, rendering responsiveness, and Node vs browser loops.                                         | Async JavaScript                       |
-| 9     | [[19 - DOM and Browser APIs/01 - DOM Fundamentals and the Render Pipeline    | DOM and Browser APIs]]            | #must-know | Render pipeline, event propagation/delegation, storage, observers, fetch, forms, workers, service workers, history.                                           | Event Loop                             |
-| 9b    | [[26 - How the Web Works/01 - From URL to Pixels                             | How the Web Works]]               | #must-know | Narrate URL-to-pixels: DNS, connections/HTTP versions, browser processes, engines, V8 pipeline, HTML/CSS/JS loading model.                                    | Runtime Foundations + Event Loop       |
-| 10    | [[10 - Modules/01 - ES Modules                                               | Modules]]                         | #important | Understand ESM, CommonJS, exports, dynamic imports, live bindings, cycles, bundle behavior, and source-to-browser tooling.                                    | Scope + Async                          |
-| 10b   | [[27 - Frontend Tooling and Build Systems/01 - Why Build Tools Exist         | Frontend Tooling and Build Systems]] | #important | Explain why build tools exist, transpilation (Babel/SWC/esbuild), Webpack and Vite mental models, and production build outputs.                            | Modules + How the Web Works            |
-| 11    | [[11 - Error Handling/01 - try catch throw finally                           | Error Handling]]                  | #important | Model sync errors, async rejections, custom errors, API failures, and React error boundaries.                                                                 | Async + React basics                   |
-| 12    | [[20 - Network and Security/01 - HTTP Essentials for Frontend                | Network and Security]]            | #must-know | HTTP, caching, CORS, cookies/auth, XSS, CSRF/CSP, prototype pollution, supply chain, realtime transports.                                                     | Error Handling + DOM/APIs              |
-| 13    | [[12 - Advanced Language Concepts/01 - Primitive vs Reference Values         | Advanced Language Concepts]]      | #important | Master equality, coercion, truthiness, destructuring, symbols, iterators, collections, BigInt/Date/JSON, numbers, strings/Unicode, typed arrays, Proxy, Intl. | Objects + Arrays                       |
-| 14    | [[13 - Performance and Memory/01 - Memory Management                         | Performance and Memory]]          | #deep-dive | Diagnose reachability, leaks, retained closures, cleanup, memoization, React performance, DevTools profiling, and Core Web Vitals.                            | Closures + Event Loop                  |
-| 15    | [[14 - JavaScript in React and Next.js/01 - JavaScript Fundamentals in React | JavaScript in React and Next.js]] | #must-know | Apply JavaScript semantics to hooks, effects, identity, immutability, async effects, server/client code, and hydration.                                       | All prior foundations                  |
-| 16    | [[21 - React Internals and Patterns/01 - Render and Commit Phases            | React Internals and Patterns]]    | #must-know | Render/commit, reconciliation/keys, Fiber, batching, context, refs, effect timing, external stores, Suspense, React 19, hooks, controlled/uncontrolled.       | JS in React                            |
-| 16b   | [[28 - Frameworks and Application Architecture/01 - The Problem Frameworks Solve | Frameworks and Application Architecture]] | #must-know | Derive frameworks from the state-sync problem; Web Components; update models compared; meta-frameworks; state taxonomy; server state; compound components; FSD/Clean/Atomic. | React Internals + DOM/Browser APIs     |
-| 17    | [[22 - Next.js Deep Dive/01 - Rendering Strategies                           | Next.js Deep Dive]]               | #must-know | Rendering strategies, the caching layers, revalidation, server actions, route handlers/proxy, data fetching, metadata/SEO, asset optimization.                | React Internals                        |
-| 18    | [[23 - TypeScript Deep Dive/01 - Type System Mental Model                    | TypeScript Deep Dive]]            | #must-know | Model real constraints with types: inference, narrowing, generics, variance, runtime validation at untrusted boundaries, tsconfig, React/Next typing.         | Modules + Advanced Language Concepts   |
-| 19    | [[24 - Testing and Quality/01 - Testing Mental Model                         | Testing and Quality]]             | #must-know | Choose the cheapest reliable failure detector: unit, component-through-behavior, MSW, deterministic async tests, Playwright, Next boundaries, CI gates.       | TypeScript + React Internals + Next.js |
-| 20    | [[25 - Accessibility and Inclusive UX/01 - Semantic HTML Before ARIA         | Accessibility and Inclusive UX]]  | #must-know | Ship semantics, keyboard/focus, accessible forms and async states, correct ARIA, dialogs, announcements — verified by automated floors plus manual passes.    | DOM/Browser APIs + JS in React         |
-| 21    | [[15 - Interview Preparation/01 - Junior to Mid Questions                    | Interview Preparation]]           | #must-know | Convert knowledge into clear, calm, experienced technical communication.                                                                                      | All core modules                       |
-| 21b   | [[29 - Frontend System Design/01 - The Frontend System Design Framework      | Frontend System Design]]          | #must-know | Run RADIO on any "design X" prompt: requirements, architecture, data model, component + network APIs, ranked optimizations — with tradeoffs, in 35 minutes.   | Frameworks + Scenarios + Network + a11y |
-| 21c   | [[30 - Backend System Design/00 - Backend System Design MOC                  | Backend System Design]]           | #important | Only if your loop has a general/backend system-design round. Networking, API design, data modeling, caching, sharding & consistent hashing, CAP/PACELC, quorum, indexing, the seven access patterns — each tied to its frontend mirror. | Frontend System Design + Frameworks |
-| 21d   | [[31 - Low Level Design/00 - Low Level Design MOC                            | Low Level Design]]                | #important | Only if your loop has an OOP/LLD/machine-coding round. SOLID, OOP, design patterns, and concurrency foundations in TypeScript — each with its frontend mirror. | Frameworks + TypeScript             |
-| 22    | [[16 - Code Output Questions/01 - Scope and Hoisting Output Questions        | Code Output Questions]]           | #must-know | Trace execution before touching the keyboard.                                                                                                                 | Continuous                             |
-| 23    | [[17 - Practical Frontend Scenarios/01 - Fixing Stale Closure in React       | Practical Frontend Scenarios]]    | #must-know | Solve real UI bugs with production-ready patterns and tradeoffs.                                                                                              | Continuous                             |
-| 24    | [[90 - Labs/00 - Labs MOC                                                    | Labs]]                            | #important | Build the mechanisms: profiler, typed boundary, accessible search, cached mutation — with tests and a11y passes.                                              | Modules 22–25 as per lab               |
-| 25    | [[18 - Revision Plans/01 - Complete Advanced JavaScript Checklist            | Revision Plans]]                  | #important | Use spaced repetition, checklists, and timed interview drills.                                                                                                | Continuous                             |
-| 26    | [[99 - Glossary                                                              | Glossary]]                        | #important | Use precise terms naturally without overloading answers.                                                                                                      | Continuous                             |
+| Phase | Module | Priority | Outcome | Dependencies |
+| ----- | ------ | -------- | ------- | ------------ |
+| 0 | [[00 - Start Here\|Start Here]] | #must-know | Know how to study the vault and verify source-backed learning. | None |
+| 1 | [[02 - JavaScript Runtime Foundations/01 - ECMAScript vs JavaScript\|Runtime Foundations]] | #must-know | Separate language, engine, runtime, host APIs, stack, heap, realms, and jobs. | Start Here |
+| 2 | [[03 - Scope and Variables/01 - Scope Types\|Scope and Variables]] | #must-know | Explain bindings, lexical environments, hoisting, TDZ, closures, and closure bugs. | Runtime Foundations |
+| 3 | [[04 - Functions Deep Dive/01 - Function Declarations vs Expressions\|Functions Deep Dive]] | #must-know | Understand functions as values, callbacks, purity, parameters, currying, debounce, and throttle. | Scope and Variables |
+| 4 | [[05 - this Binding/01 - What is this\|this Binding]] | #must-know | Explain receiver binding, strict mode, arrows, bind/call/apply, constructors, and React class examples. | Functions |
+| 5 | [[06 - Objects and Prototypes/01 - Objects Internally\|Objects and Prototypes]] | #important | Explain descriptors, prototypes, constructors, classes, copying, and identity. | Runtime + this |
+| 6 | [[07 - Arrays and Iteration/01 - Array Internals\|Arrays and Iteration]] | #must-know | Transform UI data safely while avoiding mutation and avoidable render cost. | Functions + Objects |
+| 7 | [[08 - Async JavaScript/01 - Sync vs Async JavaScript\|Async JavaScript]] | #must-know | Model promises, async/await, errors, cancellation, API integration, and stale results. | Closures + Functions |
+| 8 | [[09 - Event Loop Advanced/01 - Event Loop Overview\|Event Loop Advanced]] | #must-know | Trace tasks, microtasks, promise jobs, timers, animation frames, rendering responsiveness, and Node vs browser loops. | Async JavaScript |
+| 9 | [[19 - DOM and Browser APIs/01 - DOM Fundamentals and the Render Pipeline\|DOM and Browser APIs]] | #must-know | Render pipeline, event propagation/delegation, storage, observers, fetch, forms, workers, service workers, history. | Event Loop |
+| 9b | [[26 - How the Web Works/01 - From URL to Pixels\|How the Web Works]] | #must-know | Narrate URL-to-pixels: DNS, connections/HTTP versions, browser processes, engines, V8 pipeline, HTML/CSS/JS loading model. | Runtime Foundations + Event Loop |
+| 10 | [[10 - Modules/01 - ES Modules\|Modules]] | #important | Understand ESM, CommonJS, exports, dynamic imports, live bindings, cycles, bundle behavior, and source-to-browser tooling. | Scope + Async |
+| 10b | [[27 - Frontend Tooling and Build Systems/01 - Why Build Tools Exist\|Frontend Tooling and Build Systems]] | #important | Explain why build tools exist, transpilation (Babel/SWC/esbuild), Webpack and Vite mental models, and production build outputs. | Modules + How the Web Works |
+| 11 | [[11 - Error Handling/01 - try catch throw finally\|Error Handling]] | #important | Model sync errors, async rejections, custom errors, API failures, and React error boundaries. | Async + React basics |
+| 12 | [[20 - Network and Security/01 - HTTP Essentials for Frontend\|Network and Security]] | #must-know | HTTP, caching, CORS, cookies/auth, XSS, CSRF/CSP, prototype pollution, supply chain, realtime transports. | Error Handling + DOM/APIs |
+| 13 | [[12 - Advanced Language Concepts/01 - Primitive vs Reference Values\|Advanced Language Concepts]] | #important | Master equality, coercion, truthiness, destructuring, symbols, iterators, collections, BigInt/Date/JSON, numbers, strings/Unicode, typed arrays, Proxy, Intl. | Objects + Arrays |
+| 14 | [[13 - Performance and Memory/01 - Memory Management\|Performance and Memory]] | #deep-dive | Diagnose reachability, leaks, retained closures, cleanup, memoization, React performance, DevTools profiling, and Core Web Vitals. | Closures + Event Loop |
+| 15 | [[14 - JavaScript in React and Next.js/01 - JavaScript Fundamentals in React\|JavaScript in React and Next.js]] | #must-know | Apply JavaScript semantics to hooks, effects, identity, immutability, async effects, server/client code, and hydration. | All prior foundations |
+| 16 | [[21 - React Internals and Patterns/01 - Render and Commit Phases\|React Internals and Patterns]] | #must-know | Render/commit, reconciliation/keys, Fiber, batching, context, refs, effect timing, external stores, Suspense, React 19, hooks, controlled/uncontrolled. | JS in React |
+| 16b | [[28 - Frameworks and Application Architecture/01 - The Problem Frameworks Solve\|Frameworks and Application Architecture]] | #must-know | Derive frameworks from the state-sync problem; Web Components; update models compared; meta-frameworks; state taxonomy; server state; compound components; FSD/Clean/Atomic. | React Internals + DOM/Browser APIs |
+| 17 | [[22 - Next.js Deep Dive/01 - Rendering Strategies\|Next.js Deep Dive]] | #must-know | Rendering strategies, the caching layers, revalidation, server actions, route handlers/proxy, data fetching, metadata/SEO, asset optimization. | React Internals |
+| 18 | [[23 - TypeScript Deep Dive/01 - Type System Mental Model\|TypeScript Deep Dive]] | #must-know | Model real constraints with types: inference, narrowing, generics, variance, runtime validation at untrusted boundaries, tsconfig, React/Next typing. | Modules + Advanced Language Concepts |
+| 19 | [[24 - Testing and Quality/01 - Testing Mental Model\|Testing and Quality]] | #must-know | Choose the cheapest reliable failure detector: unit, component-through-behavior, MSW, deterministic async tests, Playwright, Next boundaries, CI gates. | TypeScript + React Internals + Next.js |
+| 20 | [[25 - Accessibility and Inclusive UX/01 - Semantic HTML Before ARIA\|Accessibility and Inclusive UX]] | #must-know | Ship semantics, keyboard/focus, accessible forms and async states, correct ARIA, dialogs, announcements — verified by automated floors plus manual passes. | DOM/Browser APIs + JS in React |
+| 21 | [[15 - Interview Preparation/01 - Junior to Mid Questions\|Interview Preparation]] | #must-know | Convert knowledge into clear, calm, experienced technical communication. | All core modules |
+| 21b | [[29 - Frontend System Design/01 - The Frontend System Design Framework\|Frontend System Design]] | #must-know | Run RADIO on any "design X" prompt: requirements, architecture, data model, component + network APIs, ranked optimizations — with tradeoffs, in 35 minutes. | Frameworks + Scenarios + Network + a11y |
+| 21c | [[30 - Backend System Design/00 - Backend System Design MOC\|Backend System Design]] | #important | Only if your loop has a general/backend system-design round. Networking, API design, data modeling, caching, sharding & consistent hashing, CAP/PACELC, quorum, indexing, the seven access patterns — each tied to its frontend mirror. | Frontend System Design + Frameworks |
+| 21d | [[31 - Low Level Design/00 - Low Level Design MOC\|Low Level Design]] | #important | Only if your loop has an OOP/LLD/machine-coding round. SOLID, OOP, design patterns, and concurrency foundations in TypeScript — each with its frontend mirror. | Frameworks + TypeScript |
+| 22 | [[16 - Code Output Questions/01 - Scope and Hoisting Output Questions\|Code Output Questions]] | #must-know | Trace execution before touching the keyboard. | Continuous |
+| 23 | [[17 - Practical Frontend Scenarios/01 - Fixing Stale Closure in React\|Practical Frontend Scenarios]] | #must-know | Solve real UI bugs with production-ready patterns and tradeoffs. | Continuous |
+| 24 | [[90 - Labs/00 - Labs MOC\|Labs]] | #important | Build the mechanisms: profiler, typed boundary, accessible search, cached mutation — with tests and a11y passes. | Modules 22–25 as per lab |
+| 25 | [[18 - Revision Plans/01 - Complete Advanced JavaScript Checklist\|Revision Plans]] | #important | Use spaced repetition, checklists, and timed interview drills. | Continuous |
+| 26 | [[99 - Glossary\|Glossary]] | #important | Use precise terms naturally without overloading answers. | Continuous |
 
 ## Module Outcomes
 
-### 0. Start Here
+Sections below follow the study order of the Full Learning Path table above; each heading names its vault module number.
+
+### Module 00 — Start Here
 
 You should understand the learning contract, source hierarchy, and study loop. The production habit is to connect every concept to a real bug or implementation decision.
 
@@ -181,7 +183,7 @@ Source of truth: ECMAScript for language semantics, HTML/browser specs for event
 
 </details>
 
-### 1. Runtime Foundations
+### Module 02 — Runtime Foundations
 
 Learn to separate ECMAScript from JavaScript-in-a-host. You should be able to explain what the engine does, what the runtime provides, why the stack matters, and why host APIs such as timers and DOM are not core language features.
 
@@ -199,7 +201,7 @@ Hard edge cases to master:
 - V8 optimizations like Hidden Classes (Shapes) and array Element Kinds (Packed vs. Holey) dictate heap layout performance.
 - `WeakRef` and `FinalizationRegistry` (ES2021) manage memory-safe caches without preventing Garbage Collection.
 
-### 2. Scope and Variables
+### Module 03 — Scope and Variables
 
 Learn lexical environments, environment records, declaration instantiation, TDZ, and closure lifetime. This is the base for hooks, modules, stale callbacks, and many code-output questions.
 
@@ -207,7 +209,7 @@ Production signal: you can identify which render or function call created the bi
 
 Interview signal: you can explain hoisting without saying declarations move, and you can connect closures to retained bindings.
 
-### 3. Functions Deep Dive
+### Module 04 — Functions Deep Dive
 
 Learn functions as objects and values: declarations, expressions, arrows, callbacks, purity, parameters, currying, debounce, and throttle.
 
@@ -215,7 +217,7 @@ Production signal: you can design callbacks that preserve arguments, cleanup, ca
 
 Interview signal: you can choose a function form based on semantics: hoisting, `this`, constructor ability, `arguments`, identity, and readability.
 
-### 4. this Binding
+### Module 05 — this Binding
 
 Learn `this` from call form, not from where a function is written. Ordinary calls, method calls, bound functions, constructors, class methods, and arrows each have different behavior.
 
@@ -223,7 +225,7 @@ Production signal: you can explain why extracted methods break and why arrows fi
 
 Interview signal: you can inspect the call expression and identify default, implicit, explicit, constructor, or lexical binding.
 
-### 5. Objects and Prototypes
+### Module 06 — Objects and Prototypes
 
 Learn object internals, property descriptors, prototype lookup, constructors, classes, and copying.
 
@@ -231,7 +233,7 @@ Production signal: you can avoid shallow-copy bugs, prototype confusion, acciden
 
 Interview signal: you can describe `new` step by step and separate a constructor's `.prototype` from an instance's internal prototype link.
 
-### 6. Arrays and Iteration
+### Module 07 — Arrays and Iteration
 
 Learn dense vs sparse arrays, mutation, immutable methods, transformation methods, search methods, sorting, and iterable protocols.
 
@@ -239,7 +241,7 @@ Production signal: you can transform API data into UI-ready data without mutatin
 
 Interview signal: you can choose `map`, `filter`, `reduce`, `for...of`, `some`, `every`, or `find` by intent, not habit.
 
-### 7. Async JavaScript
+### Module 08 — Async JavaScript
 
 Learn promises, promise combinators, async/await, async error handling, AbortController, and API integration boundaries.
 
@@ -247,7 +249,7 @@ Production signal: you can prevent duplicate requests, stale writes, unhandled r
 
 Interview signal: you can compare `Promise.all`, `allSettled`, `race`, and `any` by failure semantics and UX.
 
-### 8. Event Loop Advanced
+### Module 09 — Event Loop Advanced
 
 Learn tasks, microtasks, promise jobs, timers, queueMicrotask, requestAnimationFrame, and rendering opportunities.
 
@@ -255,47 +257,15 @@ Production signal: you can explain why UI freezes, why promises run before timer
 
 Interview signal: you can trace sync code, promise callbacks, queued microtasks, timers, and paint opportunities in order.
 
-### 9. Modules
+### Module 19 — DOM and Browser APIs
 
-Learn ESM vs CommonJS, static vs dynamic imports, named vs default exports, live bindings, circular dependencies, tree shaking, and code splitting.
+Learn the browser platform layered on top of the language: the DOM and render pipeline, event propagation and delegation, storage, the observer APIs, fetch and forms, workers and service workers, and history/navigation.
 
-Production signal: you can reason about bundle size, lazy loading, top-level side effects, server/client safety, and circular import failures.
+Production signal: you pick the right primitive for the job — delegation over per-node listeners, an observer over a scroll handler, a worker over a blocked main thread — and can name the render-pipeline cost of a given DOM change.
 
-Interview signal: you can explain live bindings and why circular imports can fail before initialization.
+Interview signal: you can trace an event through capture, target, and bubble phases, explain why layout thrash happens, and describe how to batch reads and writes.
 
-### 10. Error Handling
-
-Learn try/catch/finally, Error objects, custom errors, promise rejections, React error boundaries, and API error patterns.
-
-Production signal: you can separate expected user-facing failures from programmer bugs and build recovery paths without hiding important failures.
-
-Interview signal: you can explain what `try/catch` catches, what it does not catch, and how error boundaries fit into React UI containment.
-
-### 11. Advanced Language Concepts
-
-Learn primitive/reference values, equality, Object.is, coercion, truthiness, optional chaining, destructuring, symbols, iterators, maps, sets, WeakMap, Date, RegExp, JSON, and BigInt.
-
-Production signal: you can normalize API boundaries, validate forms correctly, build stable cache keys, and avoid serialization surprises.
-
-Interview signal: you can explain equality and coercion with mechanisms, then recommend simpler production patterns.
-
-### 12. Performance and Memory
-
-Learn reachability, garbage collection, memory leaks, closures retaining memory, cleanup, memoization, React render cost, and Chrome DevTools memory profiling.
-
-Production signal: you measure first, find retaining paths, distinguish calculation cost from render cost, and avoid cargo-cult memoization.
-
-Interview signal: you can name the bottleneck category before naming the fix: CPU, memory, network, rendering, bundle, or framework rerendering.
-
-### 13. JavaScript in React and Next.js
-
-Learn how ordinary JavaScript behavior appears through React rendering and Next.js execution environments.
-
-Production signal: you can explain stale closures, dependency arrays, referential equality, immutable updates, async effects, AbortController cleanup, server/client boundaries, and hydration mismatches.
-
-Interview signal: you can avoid folklore and say which JavaScript mechanism, React rule, or Next.js boundary caused the bug.
-
-### How the Web Works (module 26)
+### Module 26 — How the Web Works
 
 Learn the platform from the ground up: DNS and domains, TCP/TLS/QUIC and HTTP versions, the browser's multi-process architecture, rendering vs JS engines, V8's adaptive pipeline, and the HTML/CSS/JS loading model.
 
@@ -303,7 +273,15 @@ Production signal: given "the site is slow," you name the pipeline stage — DNS
 
 Interview signal: you can answer "what happens when you type a URL?" at any depth the interviewer picks, and separate Blink/WebKit/Gecko from V8/JSC/SpiderMonkey without mixing the lists.
 
-### Frontend Tooling and Build Systems (module 27)
+### Module 10 — Modules
+
+Learn ESM vs CommonJS, static vs dynamic imports, named vs default exports, live bindings, circular dependencies, tree shaking, and code splitting.
+
+Production signal: you can reason about bundle size, lazy loading, top-level side effects, server/client safety, and circular import failures.
+
+Interview signal: you can explain live bindings and why circular imports can fail before initialization.
+
+### Module 27 — Frontend Tooling and Build Systems
 
 Learn the machinery between source and browser: the problem chain that created build tools, transpilation vs polyfills vs type checking, Webpack's graph/loaders/plugins/chunks, Vite's native-ESM dev server and Rollup production builds, and what a production build emits.
 
@@ -311,7 +289,55 @@ Production signal: build failures and works-in-dev-breaks-in-build bugs are debu
 
 Interview signal: you can answer "why is Vite fast?" with architecture (no dev bundling) rather than "it uses esbuild," and explain why we still bundle despite native ESM.
 
-### Frameworks and Application Architecture (module 28)
+### Module 11 — Error Handling
+
+Learn try/catch/finally, Error objects, custom errors, promise rejections, React error boundaries, and API error patterns.
+
+Production signal: you can separate expected user-facing failures from programmer bugs and build recovery paths without hiding important failures.
+
+Interview signal: you can explain what `try/catch` catches, what it does not catch, and how error boundaries fit into React UI containment.
+
+### Module 20 — Network and Security
+
+Learn the network and security surface a frontend owns: HTTP and caching, CORS, cookies and auth, XSS, CSRF and CSP, prototype pollution, supply-chain risk, and realtime transports.
+
+Production signal: you set caching and CORS deliberately, store and send credentials safely, and treat every untrusted string as a potential injection until it is encoded or sanitized.
+
+Interview signal: you can explain the browser's same-origin model, why CORS exists, and the concrete mechanism behind an XSS or CSRF attack and its defense.
+
+### Module 12 — Advanced Language Concepts
+
+Learn primitive/reference values, equality, Object.is, coercion, truthiness, optional chaining, destructuring, symbols, iterators, maps, sets, WeakMap, Date, RegExp, JSON, and BigInt.
+
+Production signal: you can normalize API boundaries, validate forms correctly, build stable cache keys, and avoid serialization surprises.
+
+Interview signal: you can explain equality and coercion with mechanisms, then recommend simpler production patterns.
+
+### Module 13 — Performance and Memory
+
+Learn reachability, garbage collection, memory leaks, closures retaining memory, cleanup, memoization, React render cost, and Chrome DevTools memory profiling.
+
+Production signal: you measure first, find retaining paths, distinguish calculation cost from render cost, and avoid cargo-cult memoization.
+
+Interview signal: you can name the bottleneck category before naming the fix: CPU, memory, network, rendering, bundle, or framework rerendering.
+
+### Module 14 — JavaScript in React and Next.js
+
+Learn how ordinary JavaScript behavior appears through React rendering and Next.js execution environments.
+
+Production signal: you can explain stale closures, dependency arrays, referential equality, immutable updates, async effects, AbortController cleanup, server/client boundaries, and hydration mismatches.
+
+Interview signal: you can avoid folklore and say which JavaScript mechanism, React rule, or Next.js boundary caused the bug.
+
+### Module 21 — React Internals and Patterns
+
+Learn how React works beneath the API: render and commit phases, reconciliation and keys, Fiber, batching, context and refs, effect timing, external stores, Suspense, the React 19 additions, and the hook rules that fall out of the model.
+
+Production signal: you can explain why a component re-rendered, place effects with correct timing and cleanup, and choose controlled vs uncontrolled and context vs external store on mechanism, not habit.
+
+Interview signal: you can walk render → reconcile → commit, explain why keys matter and what batching changes, and connect a hook rule back to the closure or identity that causes it.
+
+### Module 28 — Frameworks and Application Architecture
 
 Learn the why-layer above React: the M×N state-sync problem frameworks solve, Web Components fairly assessed, VDOM vs signals vs compilers, meta-frameworks by philosophy, the state taxonomy (local/lifted/shared/global/server/URL), server state as a cache, compound components, and FSD/Clean/Atomic with their costs.
 
@@ -319,7 +345,15 @@ Production signal: state lives at the narrowest sufficient scope, server data li
 
 Interview signal: you can answer "why React over vanilla JS?", "how do you manage state?", and "how would you structure a large app?" with mechanisms and tradeoffs, not tool names.
 
-### TypeScript Deep Dive (module 23)
+### Module 22 — Next.js Deep Dive
+
+Learn Next.js as a system of boundaries and caches: the rendering strategies, the caching layers and revalidation, server actions, route handlers as a proxy, data fetching, metadata and SEO, and asset optimization.
+
+Production signal: you know which cache served a stale response and how to revalidate it, and you keep server-only code and secrets on the correct side of the server/client boundary.
+
+Interview signal: you can compare the rendering strategies by tradeoff, explain what runs on the server vs the client, and describe how the caching layers interact.
+
+### Module 23 — TypeScript Deep Dive
 
 Learn TypeScript as static analysis over JavaScript: structural typing, erasure, inference and widening, narrowing and discriminated unions, generics with restraint, variance, and the boundary discipline — `unknown` plus runtime validation wherever data enters the program.
 
@@ -327,7 +361,7 @@ Production signal: invalid states become unrepresentable, and no network/storage
 
 Interview signal: you can explain why types don't validate runtime input, and what `satisfies`, `as const`, and an annotation each do differently.
 
-### Testing and Quality (module 24)
+### Module 24 — Testing and Quality
 
 Learn tests as failure detectors judged by confidence, cost, and signal: unit tests from hazard analysis, component tests through user behavior, MSW at the network seam, fake timers and forced interleavings for races, a small trusted E2E layer, direct-invocation tests for Server Actions, and CI gates.
 
@@ -335,7 +369,7 @@ Production signal: the race conditions, cancellation bugs, and cache staleness t
 
 Interview signal: given a feature, you allocate failure classes to the cheapest reliable layer instead of reciting a coverage ritual.
 
-### Accessibility and Inclusive UX (module 25)
+### Module 25 — Accessibility and Inclusive UX
 
 Learn semantics-first accessibility: native elements before ARIA, keyboard and focus as core mechanics, forms whose errors are associated and announced, correct dialogs via platform primitives, live regions for async UI, and the numbers (contrast, zoom/reflow) — verified by automated floors plus manual keyboard/screen-reader passes.
 
@@ -343,7 +377,13 @@ Production signal: your features are completable eyes-free and mouse-free, and m
 
 Interview signal: you can state what axe can and cannot catch, and fix an inaccessible dialog or async form from mechanism, not memory.
 
-### Frontend System Design (module 29)
+### Module 15 — Interview Preparation
+
+Train answer structure, bad-vs-good answers, strong mid-level explanations, senior-style thinking, and mock interview delivery.
+
+Production signal: your answer includes a mechanism, an example, and a tradeoff without sounding scripted.
+
+### Module 29 — Frontend System Design
 
 **When to study:** if your loop has any frontend design round — common at product companies for mid-to-senior roles.
 
@@ -353,7 +393,7 @@ Production signal: design docs and reviews open with requirements and tradeoffs;
 
 Interview signal: given "design an autocomplete/feed/carousel," you run a structured 35-minute pass covering races, caching, a11y, and failure states unprompted.
 
-### Backend System Design (module 30)
+### Module 30 — Backend System Design
 
 **When to study:** only if your loop has a general or backend system-design round. Otherwise skim the frontend-mirror callouts and move on — it's a conditional track, not part of the core spine.
 
@@ -363,7 +403,7 @@ Production signal: you can reason about why an API is shaped or eventually-consi
 
 Interview signal: you can run a structured backend "design X" pass, choose stores and caching deliberately, and reject premature sharding with current numbers.
 
-### Low Level Design (module 31)
+### Module 31 — Low Level Design
 
 **When to study:** only if your loop has an OOP/LLD/machine-coding round. A conditional track, smaller than the others.
 
@@ -373,35 +413,29 @@ Production signal: you design a feature's types and boundaries before methods, a
 
 Interview signal: you derive clean classes from requirements, argue composition vs inheritance concretely, and connect each pattern to where it already lives in your frontend code.
 
-### Labs (module 90)
-
-Apply everything: the [[90 - Labs/00 - Labs MOC|labs]] force the event loop, typed boundaries, accessible async flows, and Next caching through your own fingers, with planted bugs to diagnose — plus a code-review lab where you're the reviewer, and a timed frontend system-design round to rehearse the design interview out loud.
-
-### 14. Interview Preparation
-
-Train answer structure, bad-vs-good answers, strong mid-level explanations, senior-style thinking, and mock interview delivery.
-
-Production signal: your answer includes a mechanism, an example, and a tradeoff without sounding scripted.
-
-### 15. Code Output Questions
+### Module 16 — Code Output Questions
 
 Trace scope, closures, `this`, prototypes, async ordering, and mixed questions.
 
 Production signal: you can debug by execution order instead of trying random fixes.
 
-### 16. Practical Frontend Scenarios
+### Module 17 — Practical Frontend Scenarios
 
 Practice real situations: stale closures, duplicate requests, races, large list transformations, mutation, listener cleanup, form submission, memory leaks, debounced search, and request cancellation.
 
 Production signal: you can move from symptom to root cause to safe implementation.
 
-### 17. Revision Plans
+### Module 90 — Labs
+
+Apply everything: the [[90 - Labs/00 - Labs MOC|labs]] force the event loop, typed boundaries, accessible async flows, and Next caching through your own fingers, with planted bugs to diagnose — plus a code-review lab where you're the reviewer, and a timed frontend system-design round to rehearse the design interview out loud.
+
+### Module 18 — Revision Plans
 
 Use checklists, 7-day plans, 14-day plans, interview questions, output drills, and practical scenario repetition.
 
 Production signal: you can keep knowledge available under pressure instead of relearning topics from zero.
 
-### 18. Glossary
+### Module 99 — Glossary
 
 Use precise terms like execution context, lexical environment, environment record, reference record, promise job, task, microtask, realm, and reachability.
 
