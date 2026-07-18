@@ -1,0 +1,128 @@
+filters:
+  and:
+    - status != null
+    - '!file.folder.contains("98 - Vault Operations")'
+properties:
+  file.name:
+    displayName: Note
+  module:
+    displayName: Module
+  priority:
+    displayName: Priority
+  status:
+    displayName: Status
+views:
+  - type: table
+    name: Quiz Pool
+    filters:
+      and:
+        - status == "learning"
+        - priority == "must-know"
+        - '!file.name.contains("MOC")'
+        - '!file.name.contains("Checklist")'
+    order:
+      - file.name
+      - module
+      - priority
+    sort:
+      - property: module
+        direction: ASC
+      - property: file.name
+        direction: ASC
+  - type: table
+    name: Study Queue
+    filters:
+      and:
+        - status == "learning"
+    order:
+      - file.name
+      - module
+      - priority
+    sort:
+      - property: module
+        direction: ASC
+      - property: file.name
+        direction: ASC
+  - type: table
+    name: Must Know
+    filters:
+      and:
+        - priority == "must-know"
+        - status != "solid"
+        - '!file.name.contains("MOC")'
+        - '!file.name.contains("Checklist")'
+    order:
+      - file.name
+      - module
+      - status
+    sort:
+      - property: module
+        direction: ASC
+      - property: file.name
+        direction: ASC
+    limit: 50
+  - type: table
+    name: Learning
+    filters:
+      and:
+        - status == "learning"
+    order:
+      - file.name
+      - module
+      - priority
+    sort:
+      - property: priority
+        direction: ASC
+      - property: module
+        direction: ASC
+  - type: table
+    name: Solid
+    filters:
+      and:
+        - status == "solid"
+    order:
+      - file.name
+      - module
+      - priority
+    sort:
+      - property: module
+        direction: ASC
+  - type: table
+    name: Not Started
+    filters:
+      and:
+        - status == "not-started"
+    order:
+      - file.name
+      - module
+      - priority
+    sort:
+      - property: module
+        direction: ASC
+      - property: file.name
+        direction: ASC
+  - type: table
+    name: Deep Dive Queue
+    filters:
+      and:
+        - priority == "deep-dive"
+        - status != "solid"
+    order:
+      - file.name
+      - module
+      - status
+    sort:
+      - property: module
+        direction: ASC
+  - type: table
+    name: Version-Sensitive (re-verify)
+    filters:
+      and:
+        - verified_on != null
+    order:
+      - file.name
+      - version_scope
+      - verified_on
+    sort:
+      - property: verified_on
+        direction: ASC

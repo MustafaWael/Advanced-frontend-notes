@@ -1,0 +1,248 @@
+{
+  "main": {
+    "id": "b7d8f449d016c06d",
+    "type": "split",
+    "children": [
+      {
+        "id": "11db709d43c9eebd",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3b6e81b83ac9d410",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "01 - Roadmap.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "01 - Roadmap"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "f621397ba0c10fea",
+    "type": "split",
+    "children": [
+      {
+        "id": "e1f5c4d489781a41",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e07c68063a46c0ed",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "092434b2bda2f827",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "13016042ace2adb7",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 357.5
+  },
+  "right": {
+    "id": "4fd77e8acbf5b24e",
+    "type": "split",
+    "children": [
+      {
+        "id": "0e7b534d1457c16d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cf21df24d015a3a5",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "00 - Start Here.md",
+                "collapseAll": true,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for 00 - Start Here"
+            }
+          },
+          {
+            "id": "bdb792cbc57c83cd",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "00 - Start Here.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from 00 - Start Here"
+            }
+          },
+          {
+            "id": "6307bb9756d8b4ca",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "69415309087dd026",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "663d3294c7338c63",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "_Dashboard.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of _Dashboard"
+            }
+          },
+          {
+            "id": "3f68cb9b32f74263",
+            "type": "leaf",
+            "state": {
+              "type": "footnotes",
+              "state": {
+                "file": "01 - Roadmap.md"
+              },
+              "icon": "lucide-file-signature",
+              "title": "Footnotes"
+            }
+          }
+        ],
+        "currentTab": 5
+      }
+    ],
+    "direction": "horizontal",
+    "width": 272.5,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "3b6e81b83ac9d410",
+  "lastOpenFiles": [
+    "_Dashboard.md",
+    "99 - Glossary.md",
+    "90 - Labs/06 - Frontend System Design Round Lab.md",
+    "01 - Roadmap.md",
+    "90 - Labs/00 - Labs MOC.md",
+    "00 - Start Here.md",
+    "90 - Labs/05 - Code Review Lab - The Search Results PR.md",
+    "90 - Labs/04 - Next Cached Dashboard Mutation Lab.md",
+    "90 - Labs/03 - Accessible Async Search Lab.md",
+    "90 - Labs/02 - Typed API Boundary Lab.md",
+    "90 - Labs/01 - Event Loop and Rendering Profiler Lab.md",
+    "30 - Backend System Design/12 - Backend System Design Checklist.md",
+    "30 - Backend System Design/11 - Deep-Dive Technologies.md",
+    "30 - Backend System Design/09 - Numbers to Know.md",
+    "30 - Backend System Design/07 - CAP and Consistency.md",
+    "30 - Backend System Design/05 - Caching.md",
+    "30 - Backend System Design/04 - Data Modeling and Databases.md",
+    "30 - Backend System Design/01 - The Delivery Framework.md",
+    "30 - Backend System Design/02 - Networking and Protocols.md",
+    "30 - Backend System Design/03 - API Design.md",
+    "30 - Backend System Design/00 - Backend System Design MOC.md",
+    "29 - Frontend System Design/18 - Designing an Image Carousel.md",
+    "29 - Frontend System Design/17 - Designing a Data Table.md",
+    "29 - Frontend System Design/04 - Designing an Infinite Scroll Feed.md",
+    "29 - Frontend System Design/03 - Frontend System Design Checklist.md",
+    "29 - Frontend System Design/02 - Designing an Autocomplete.md",
+    "31 - Low Level Design",
+    "30 - Backend System Design",
+    "Base.base",
+    "29 - Frontend System Design",
+    "28 - Frameworks and Application Architecture",
+    "27 - Frontend Tooling and Build Systems",
+    "26 - How the Web Works",
+    "98 - Vault Operations/Skills/add-use-cases/add-use-cases.skill",
+    "98 - Vault Operations/Skills/add-use-cases",
+    "98 - Vault Operations/Skills"
+  ]
+}
