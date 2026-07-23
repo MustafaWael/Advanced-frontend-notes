@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "01 - Roadmap.md",
+                "file": "02 - JavaScript Runtime Foundations/01 - ECMAScript vs JavaScript.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -28,7 +28,7 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "01 - Roadmap"
+              "title": "01 - ECMAScript vs JavaScript"
             }
           }
         ]
@@ -63,7 +63,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "WHATWG",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -88,7 +88,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 357.5
+    "width": 342.5
   },
   "right": {
     "id": "4fd77e8acbf5b24e",
@@ -181,7 +181,7 @@
             "state": {
               "type": "footnotes",
               "state": {
-                "file": "01 - Roadmap.md"
+                "file": "02 - JavaScript Runtime Foundations/01 - ECMAScript vs JavaScript.md"
               },
               "icon": "lucide-file-signature",
               "title": "Footnotes"
@@ -208,12 +208,22 @@
   },
   "active": "3b6e81b83ac9d410",
   "lastOpenFiles": [
+    "02 - JavaScript Runtime Foundations/00 - JavaScript Runtime Foundations MOC.md",
+    "02 - JavaScript Runtime Foundations/07 - Runtime Foundations Checklist.md",
+    "02 - JavaScript Runtime Foundations/06 - Realm Agent and Job Queue.md",
+    "02 - JavaScript Runtime Foundations/05 - Memory Heap.md",
+    "02 - JavaScript Runtime Foundations/04 - Call Stack.md",
+    "02 - JavaScript Runtime Foundations/03 - Execution Context.md",
+    "02 - JavaScript Runtime Foundations/02 - JavaScript Engine and Runtime.md",
+    "02 - JavaScript Runtime Foundations/01 - ECMAScript vs JavaScript.md",
+    "23 - TypeScript Deep Dive/11 - Erasable Syntax and Native TS Execution.md",
+    "14 - JavaScript in React and Next.js/09 - Server vs Client JavaScript in Next.js.md",
+    "01 - Roadmap.md",
+    "00 - Start Here.md",
     "_Dashboard.md",
     "99 - Glossary.md",
     "90 - Labs/06 - Frontend System Design Round Lab.md",
-    "01 - Roadmap.md",
     "90 - Labs/00 - Labs MOC.md",
-    "00 - Start Here.md",
     "90 - Labs/05 - Code Review Lab - The Search Results PR.md",
     "90 - Labs/04 - Next Cached Dashboard Mutation Lab.md",
     "90 - Labs/03 - Accessible Async Search Lab.md",
@@ -224,16 +234,6 @@
     "30 - Backend System Design/09 - Numbers to Know.md",
     "30 - Backend System Design/07 - CAP and Consistency.md",
     "30 - Backend System Design/05 - Caching.md",
-    "30 - Backend System Design/04 - Data Modeling and Databases.md",
-    "30 - Backend System Design/01 - The Delivery Framework.md",
-    "30 - Backend System Design/02 - Networking and Protocols.md",
-    "30 - Backend System Design/03 - API Design.md",
-    "30 - Backend System Design/00 - Backend System Design MOC.md",
-    "29 - Frontend System Design/18 - Designing an Image Carousel.md",
-    "29 - Frontend System Design/17 - Designing a Data Table.md",
-    "29 - Frontend System Design/04 - Designing an Infinite Scroll Feed.md",
-    "29 - Frontend System Design/03 - Frontend System Design Checklist.md",
-    "29 - Frontend System Design/02 - Designing an Autocomplete.md",
     "31 - Low Level Design",
     "30 - Backend System Design",
     "Base.base",

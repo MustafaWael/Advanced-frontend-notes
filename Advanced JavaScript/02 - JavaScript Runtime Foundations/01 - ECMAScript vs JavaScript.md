@@ -69,17 +69,38 @@ Those are provided by host environments, platform specifications, frameworks, or
 > [!tip] globalThis for isomorphic code
 > This enables isomorphic (server-and-client) JavaScript execution in Next.js without throwing environment-specific `ReferenceErrors` (e.g. `ReferenceError: window is not defined` during SSR).
 
-## 4. Runtime Layer Model
+## 4. Layer Attribution Model
 
-| Layer             | Owns                            | Example question                                      |
-| ----------------- | ------------------------------- | ----------------------------------------------------- |
-| ECMAScript        | Core language behavior          | Why does `let` throw before initialization?           |
-| Engine            | Implementation and optimization | How does V8 execute and optimize this code?           |
-| Host/runtime      | External APIs and scheduling    | Why does `setTimeout` run after promise callbacks?    |
-| Framework/tooling | Rendering, bundling, transforms | Why does this code fail during Next.js server render? |
-| Application       | State, ownership, user flow     | Which request is still relevant to the current UI?    |
+The question this model answers is *"which layer owns this behavior?"* — not *"what is the runtime made of."* Those are different questions, and conflating them is itself a layer error.
 
-This model is useful in interviews because it shows you can reason from the correct source of truth.
+**The runtime proper is two layers.** ECMAScript is not a peer layer in it — it is the *contract* the engine implements. Framework and application code sit *on top of* the runtime; they consume it, they are not part of it.
+
+### Inside the runtime
+
+| Layer                          | Owns                                                                                                                                                                 | Example question                                   |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Engine (implements ECMAScript) | Language semantics, execution contexts, the agent, the job/microtask queue machinery, GC, JIT optimization                                                           | Why does `let` throw before initialization?        |
+| Host environment               | Everything ECMA-262 leaves abstract (`HostEnqueuePromiseJob`, `HostCallJobCallback`), task sources, the event loop, external APIs (`setTimeout`, DOM, `fetch`, `fs`) | Why does `setTimeout` run after promise callbacks? |
+
+The event loop is **host-owned**, not engine-owned: it is specified in the HTML Living Standard for browsers and implemented by libuv in Node.js. ECMA-262 defines only the *job* abstraction and hands scheduling to the host. See [[02 - JavaScript Runtime Foundations/06 - Realm Agent and Job Queue|Realm Agent and Job Queue]].
+
+### Above the runtime
+
+| Layer             | Owns                                                                              | Example question                                      |
+| ----------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Framework/tooling | Selects which host you run on; transforms language semantics; rendering, bundling | Why does this code fail during Next.js server render? |
+| Application       | State, ownership, user flow                                                       | Which request is still relevant to the current UI?    |
+
+> [!warning] Tooling is not cleanly "above" the runtime
+> The clean stack is a teaching simplification. Tooling can change which runtime you are on and can change observable language semantics — so "it's just my build config" is often the wrong first hypothesis for a behavior bug.
+>
+> - **Downleveling changes async ordering.** Babel/SWC compiling `async/await` to generators plus a promise polyfill produces different microtask interleaving than native `await`. Code that relies on exact tick ordering can pass natively and fail transpiled.
+> - **The framework picks the host.** Next.js does not merely render — it decides whether your module evaluates in Node.js or in the Edge runtime (workerd), which has a different global set and no `fs`. Same source file, different host layer.
+> - **Bundler resolution decides module semantics.** Whether a dependency resolves to ESM or CJS determines live bindings vs. a snapshotted copy of the exports — a language-level difference, chosen by a resolver.
+>
+> Better mental model: tooling is a **runtime selector and semantics transformer**, not a stratum of the runtime.
+
+This model is useful in interviews because it shows you can reason from the correct source of truth — and naming the boundary between "inside the runtime" and "on top of it" is exactly the distinction weaker candidates blur.
 
 ## 5. Support, Transpilation, and Polyfills
 
@@ -114,14 +135,14 @@ const response = await fetch("/api/users");
 
 New language features move through TC39's staged process before landing in the annual ECMAScript edition:
 
-| Stage | Meaning |
-| --- | --- |
-| 0 | Strawperson — an idea. |
-| 1 | Proposal — problem accepted as worth solving. |
-| 2 | Draft — initial spec text exists. |
-| 2.7 | Approved for implementation and testing (added to the process in 2023). |
-| 3 | Candidate — spec complete; engines implement and gather feedback. |
-| 4 | Finished — two+ implementations, tests pass; merged into the next annual edition. |
+| Stage | Meaning                                                                           |
+| ----- | --------------------------------------------------------------------------------- |
+| 0     | Strawperson — an idea.                                                            |
+| 1     | Proposal — problem accepted as worth solving.                                     |
+| 2     | Draft — initial spec text exists.                                                 |
+| 2.7   | Approved for implementation and testing (added to the process in 2023).           |
+| 3     | Candidate — spec complete; engines implement and gather feedback.                 |
+| 4     | Finished — two+ implementations, tests pass; merged into the next annual edition. |
 
 > [!warning] Stage 3 is not "safe to rely on"
 > Stage 3 proposals have been changed or demoted after real-world feedback (`Array.prototype.groupBy` was renamed because it broke websites; ShadowRealm moved back from 3 to 2.7). Only stage 4 is finished. In production, "the proposal exists" and "my target runtimes ship it" are separate questions.
@@ -263,6 +284,9 @@ export async function getOrders(): Promise<Order[]> {
 - Confusing transpilation support with native engine support.
 - Treating a TC39 proposal as stable before it reaches the finished stage and ships in target engines.
 - Assuming browser and server JavaScript share the same globals because the syntax is the same.
+- Counting frameworks and application code as layers *of* the runtime. They run on top of it — the runtime is engine + host.
+- Saying the engine owns the event loop. The engine owns the job queue machinery; the host owns the loop that drains it.
+- Assuming transpiled `async/await` preserves native microtask ordering.
 
 ## 10. Practice
 

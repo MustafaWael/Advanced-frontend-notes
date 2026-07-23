@@ -180,6 +180,9 @@ for await (const users of fetchPages("/api/users")) {
 }
 ```
 
+> [!info] Same primitive as `async/await`
+> A generator is a suspendable call-stack frame you resume with `.next()`. `async/await` is that identical suspend/resume machinery wired to a promise scheduler instead — which is why an async function runs synchronously until the first `await`, then resumes later as a microtask. See the internals deep dive in [[08 - Async JavaScript/04 - Async Await|Async Await]] and [[09 - Event Loop Advanced/03 - Promise Jobs|Promise Jobs]].
+
 > [!tip] Tradeoff
 > this is elegant for streaming/pagination, but UI code still needs cancellation, loading state, and error handling.
 

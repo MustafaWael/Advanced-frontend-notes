@@ -151,6 +151,19 @@ C
 
 `await` suspends the async function and its continuation runs later as a promise job.
 
+### How many ticks does the continuation cost?
+
+`await x` runs `PromiseResolve(%Promise%, x)` before scheduling. The tick count depends on what `x` is:
+
+| Expression | Microtask ticks to resume |
+|---|---|
+| `await 42` (non-promise) | **1** |
+| `await nativePromise` | **1** — the native promise is *passed through*, no wrapper (ES2019 / V8 7.2) |
+| `await thenable` (object with a synchronous `.then`) | **2** — one extra job to adopt the thenable |
+
+> [!warning] `await thenable` is 2 ticks, not 3
+> A native promise is passed through by `PromiseResolve` with no extra hop, so `await p` resumes in one tick. A *thenable* costs one **extra** tick: `PromiseResolve` enqueues `NewPromiseResolveThenableJob` (tick 1), which calls `.then` and enqueues the reaction (tick 2). That is one extra turn over the native path — not two. See the deep dive in [[08 - Async JavaScript/04 - Async Await|Async Await]] for the full trace. The same suspend/resume frame is a generator underneath: [[12 - Advanced Language Concepts/08 - Iterators and Generators|Iterators and Generators]].
+
 ## 8. Real Frontend Bug: Reading Before A Promise Reaction
 
 ### Problem

@@ -90,6 +90,42 @@ console.log("outside");
 // inside after
 ```
 
+## Async Function Internals (Deep Dive)
+
+This is the machinery under section 3. You do not need it for most application code, but it explains *why* the ordering above happens and it separates a mid-level answer from a senior one.
+
+### A suspendable stack frame, not magic
+
+An async function is not special at the value level — it is a normal call-stack frame that the engine can **suspend and resume**. This is the exact capability a generator has (`yield` pauses a frame; the engine keeps the frame's locals alive and pushes it back later). `async/await` is that same resumable-frame mechanism wired to a promise scheduler instead of to `.next()`.
+
+- At `await`, the frame is suspended and **popped** off the call stack — its locals are preserved off-stack.
+- A continuation is registered on the awaited promise (a promise reaction job).
+- When that promise settles, the job runs on the **microtask queue**, and the frame is pushed back and resumed at the awaited line.
+
+So "async function = a call-stack frame that can be paused and put back" only makes sense once [[02 - JavaScript Runtime Foundations/03 - Execution Context|Execution Context]] and [[02 - JavaScript Runtime Foundations/04 - Call Stack|Call Stack]] are solid. The scheduler side lives in [[02 - JavaScript Runtime Foundations/06 - Realm Agent and Job Queue|Realm Agent and Job Queue]] and [[09 - Event Loop Advanced/03 - Promise Jobs|Promise Jobs]]. Generators — the same suspend/resume primitive — are in [[12 - Advanced Language Concepts/08 - Iterators and Generators|Iterators and Generators]].
+
+### `PromiseResolve`: the native-promise fast path
+
+`await x` does **not** blindly wrap `x` in a new promise. The spec runs `PromiseResolve(%Promise%, x)`:
+
+- If `x` is already a native promise, it is **passed through unchanged** — no wrapper, no extra microtask hop. (This pass-through was added in ES2019 / V8 7.2.)
+- If `x` is a non-promise (like `42`), it resolves in a single microtask tick.
+- If `x` is a *thenable* (a non-native object with a `.then`), the engine must adopt it via an extra job, costing an additional tick.
+
+### The tick budget (the number people get wrong)
+
+| Expression | Microtask ticks to resume |
+|---|---|
+| `await 42` / `await nativePromise` | **1** |
+| `await thenable` (synchronous `.then`) | **2** (1 extra) |
+
+> [!warning] `await thenable` is 2 ticks, not 3
+> The common mistake — including one I made in an earlier session — is counting `await thenable` as ~3 ticks. Trace it: `PromiseResolve` sees a callable `.then`, enqueues `NewPromiseResolveThenableJob` (tick 1); that job calls `.then`, which resolves synchronously and enqueues the reaction (tick 2); the reaction resumes the frame. Two ticks total, **one extra** over the native path. V8's own docs describe thenable handling as adding "an extra microtask turn" — singular.
+
+### `return p` vs `return await p`
+
+`return await p` reads the value out and re-wraps it, historically adding a tick over `return p`. The reason to keep `return await` anyway is **stack traces**: inside a `try`, `return await p` keeps the async frame on the stack so a rejection is catchable locally and shows up in the async trace; a bare `return p` hands the promise to the caller and the frame is already gone. Prefer `return await p` inside `try/catch`; elsewhere it is a micro-optimization not worth fussing over.
+
 ## 4. Mental Model
 
 `await` means: "pause this async function here and resume it later."

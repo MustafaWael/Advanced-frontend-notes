@@ -25,8 +25,9 @@ TypeScript is a static analysis language layered on JavaScript. This module teac
 6. [[23 - TypeScript Deep Dive/06 - Type Operators and Exhaustiveness|Type Operators and Exhaustiveness]]
 7. [[23 - TypeScript Deep Dive/07 - Function Types Overloads and Variance|Function Types, Overloads and Variance]]
 8. [[23 - TypeScript Deep Dive/08 - Modules tsconfig and Package Types|Modules, tsconfig and Package Types]]
-9. [[23 - TypeScript Deep Dive/09 - React and Next TypeScript Patterns|React and Next TypeScript Patterns]]
-10. [[23 - TypeScript Deep Dive/10 - TypeScript Checklist|TypeScript Checklist]]
+9. [[23 - TypeScript Deep Dive/11 - Erasable Syntax and Native TS Execution|Erasable Syntax and Native TS Execution]]
+10. [[23 - TypeScript Deep Dive/09 - React and Next TypeScript Patterns|React and Next TypeScript Patterns]]
+11. [[23 - TypeScript Deep Dive/10 - TypeScript Checklist|TypeScript Checklist]]
 
 ## You're Done When
 
@@ -35,6 +36,7 @@ TypeScript is a static analysis language layered on JavaScript. This module teac
 - [ ] I can write a useful generic without hiding a simple domain model behind type gymnastics.
 - [ ] I can explain function-type variance and design callback APIs that are safe for callers.
 - [ ] I can configure a strict project, understand its emitted JavaScript, and type React/Next boundaries honestly.
+- [ ] I can explain the two jobs of `tsc` (check vs emit), which syntax is erasable, and why Node runs `.ts` but rejects `enum`.
 
 ## Related Notes
 

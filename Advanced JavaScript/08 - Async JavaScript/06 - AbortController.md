@@ -404,6 +404,34 @@ async function pollJob(jobId, signal) {
 
 Works because cancellation is cooperative: each awaited step observes the same signal, so aborting settles whichever step is currently pending and the rejection unwinds the loop. Combine with `AbortSignal.any` (section 9) to add a route-change or timeout reason.
 
+### Fail-fast *and* cancel siblings (structured concurrency)
+
+A dashboard loads three independent panels with `Promise.all`. `Promise.all` already rejects the instant one request fails — but the other two keep running, wasting bandwidth. Sharing one controller upgrades "fail fast" to "fail fast **and** stop the siblings."
+
+```ts
+async function loadDashboard(userId: string) {
+  const controller = new AbortController();
+  const { signal } = controller;
+
+  try {
+    const [user, orders, flags] = await Promise.all([
+      apiFetch(`/users/${userId}`, { signal }),
+      apiFetch(`/orders?user=${userId}`, { signal }),
+      apiFetch(`/flags`, { signal }),
+    ]);
+    return { user, orders, flags };
+  } catch (error) {
+    controller.abort(); // one failure cancels the still-pending siblings
+    throw error;
+  }
+}
+```
+
+Works because all three requests share one signal: `Promise.all` surfaces the first rejection immediately, and `controller.abort()` in the `catch` settles whichever siblings are still in flight — the lifecycle of the children is bounded by the parent operation. That parent-bounds-children rule is the core of *structured concurrency*; without the shared signal, `Promise.all` gives you fail-fast reporting but orphaned, still-running work. Pair with `AbortSignal.any` (section 9) so a route change cancels the whole group too.
+
+> [!tip] `Promise.all` reports, the signal cancels
+> `Promise.all` decides *when you hear about* failure; it does nothing to stop the losers. Cancellation is always a separate, cooperative act — the signal is what carries it. See [[08 - Async JavaScript/03 - Promise Methods|Promise Methods]] for `allSettled`/`race` tradeoffs.
+
 ## 13. Interview Answer
 
 **Short version:** `AbortController` creates a signal. You pass the signal to work like `fetch`, and calling `abort()` notifies that work to stop if it supports cancellation.

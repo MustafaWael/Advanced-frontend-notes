@@ -83,7 +83,7 @@ Then burn down errors module by module (start at the boundaries and shared utili
 Tradeoffs: a strict migration on a large codebase is real work and produces a noisy interim period; `noUncheckedIndexedAccess` in particular forces `!`/checks on hot paths where emptiness is impossible by construction. The payoff is that whole bug classes (null access, implicit any spread) stop reaching production. `skipLibCheck: true` is a pragmatic default (checking all of `node_modules`' declarations is slow and you can't fix them anyway) — just know it means library type errors surface at *usage* sites, not eagerly.
 
 > [!tip] Erased types, real syntax
-> Frontmatter rule for everything in this note: type annotations are erased, but `enum` and `namespace` (and parameter properties) are *runtime syntax* TypeScript invented. Prefer `as const` objects + unions over `enum` — they erase cleanly, tree-shake, and behave like ordinary JavaScript. This also keeps code compatible with type-stripping runtimes (Node's type stripping runs TS by erasing types only).
+> Frontmatter rule for everything in this note: type annotations are erased, but `enum` and `namespace` (and parameter properties) are *runtime syntax* TypeScript invented. Prefer `as const` objects + unions over `enum` — they erase cleanly, tree-shake, and behave like ordinary JavaScript. This also keeps code compatible with type-stripping runtimes (Node's type stripping runs TS by erasing types only). Full treatment — the two jobs of `tsc`, the erasable/non-erasable table, and strip-only SyntaxErrors — in [[23 - TypeScript Deep Dive/11 - Erasable Syntax and Native TS Execution|Erasable Syntax and Native TS Execution]].
 
 ## 3. Interview Answer
 

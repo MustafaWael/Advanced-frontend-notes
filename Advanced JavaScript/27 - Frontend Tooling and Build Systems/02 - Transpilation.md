@@ -50,6 +50,16 @@ const el = _jsx("button", { onClick: fn, children: "Save" });
 
 `browserslist` (`"defaults", "not dead"`, or explicit versions) is the single contract shared by Babel, SWC, PostCSS/autoprefixer — one config that decides how much down-leveling and prefixing you ship.
 
+**4. `tsc` emit is a transpiler too — and Node adds a third, weaker path.** Set `tsc`'s `target: ES5` and it downlevels `async/await` to a generator state machine exactly like Babel; it just also type-checks first. But Node's *native* `.ts` execution is a different thing again: it **strips only** — replacing type syntax with whitespace, no downleveling, no polyfills, no code generation. So there are three tiers of "handling TypeScript":
+
+| Path | Downlevels syntax? | Handles `enum`/`namespace`/param-properties? |
+|---|---|---|
+| `tsc` emit / Babel / SWC (full) | ✅ | ✅ generates/transforms |
+| esbuild / SWC strip (bundler) | ✅ | ✅ (transform mode) |
+| Node native / strip-only | ❌ deletes only | ❌ **SyntaxError** |
+
+That bottom row is why non-erasable syntax (`enum`, `namespace`, parameter properties) is discouraged in code you might run natively. Full treatment in [[23 - TypeScript Deep Dive/11 - Erasable Syntax and Native TS Execution|Erasable Syntax and Native TS Execution]].
+
 ## 2. Why It Matters
 
 - "Why does JSX need a build step?" and "does esbuild check my types?" are direct interview questions; the type-check/transpile split trips up many mid-levels.
@@ -105,4 +115,5 @@ Deeper answer:
 
 - [[27 - Frontend Tooling and Build Systems/01 - Why Build Tools Exist|Why Build Tools Exist]]
 - [[23 - TypeScript Deep Dive/00 - TypeScript Deep Dive MOC|TypeScript Deep Dive MOC]]
+- [[23 - TypeScript Deep Dive/11 - Erasable Syntax and Native TS Execution|Erasable Syntax and Native TS Execution]]
 - [[27 - Frontend Tooling and Build Systems/04 - Vite Mental Model|Vite Mental Model]]
