@@ -5,7 +5,7 @@ tags:
   - ecmascript-vs-javascript
 module: 02 - JavaScript Runtime Foundations
 priority: must-know
-status: not-started
+status: solid
 verified_on: 2026-07-23
 version_scope: TC39 process (stage 2.7 added late 2023); Node global fetch (v18+); WinterTC / Ecma TC55; Next.js 16 proxy.ts (renamed from middleware.ts)
 ---
