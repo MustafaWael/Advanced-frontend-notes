@@ -96,27 +96,18 @@ For each drill, write the likely layer: language, engine, host/runtime, framewor
 
 <details>
 <summary>Show answer</summary>
-
-1. `window is not defined` in Next.js is usually a host/framework boundary bug: browser-only API read during server execution or module evaluation.
-
-2. A timer after a promise callback is host/event-loop plus ECMAScript job behavior: the promise reaction runs through microtask processing before the later timer task.
-
-3. A maximum-call-stack crash is call stack/language execution: recursive processing pushed too many execution contexts.
-
-4. A modal leak is memory/reachability: an event listener, timer, subscription, cache, closure, request callback, or DOM reference still reaches old modal data.
-
-5. Cross-iframe `instanceof Array` is a realm issue: each realm has its own intrinsic constructors. Prefer `Array.isArray`.
-
-6. Typing freeze is usually main-thread CPU/rendering pressure: synchronous filtering, sorting, layout, or rendering work blocks input and paint.
-
-7. Logs around `await` are promise-job/async-continuation behavior: code before `await` runs synchronously; code after `await` resumes later when the awaited promise settles.
-
-8. `SharedArrayBuffer is not defined` is a host/runtime security context issue: missing COOP/COEP isolation headers.
-
-9. Array lookup drop is an engine optimization issue: the array transitioned to `HOLEY_ELEMENTS` kind, so element access loses the packed fast path (the engine must check the prototype chain for indexed properties and may fall back to dictionary-mode elements).
-
-10. `DataCloneError` is host/runtime plus application layer: structured clone cannot serialize functions, so the callback property makes the whole message unclonable. Fix at the application layer: send plain data, keep callbacks on the sending side, and signal completion with a response message.
-
+<ol>
+<li><code>window is not defined</code> in Next.js is usually a host/framework boundary bug: browser-only API read during server execution or module evaluation.</li>
+<li>A timer after a promise callback is host/event-loop plus ECMAScript job behavior: the promise reaction runs through microtask processing before the later timer task.</li>
+<li>A maximum-call-stack crash is call stack/language execution: recursive processing pushed too many execution contexts.</li>
+<li>A modal leak is memory/reachability: an event listener, timer, subscription, cache, closure, request callback, or DOM reference still reaches old modal data.</li>
+<li>Cross-iframe <code>instanceof Array</code> is a realm issue: each realm has its own intrinsic constructors. Prefer <code>Array.isArray</code>.</li>
+<li>Typing freeze is usually main-thread CPU/rendering pressure: synchronous filtering, sorting, layout, or rendering work blocks input and paint.</li>
+<li>Logs around <code>await</code> are promise-job/async-continuation behavior: code before <code>await</code> runs synchronously; code after <code>await</code> resumes later when the awaited promise settles.</li>
+<li><code>SharedArrayBuffer is not defined</code> is a host/runtime security context issue: missing COOP/COEP isolation headers.</li>
+<li>Array lookup drop is an engine optimization issue: the array transitioned to <code>HOLEY_ELEMENTS</code> kind, so element access loses the packed fast path (the engine must check the prototype chain for indexed properties and may fall back to dictionary-mode elements).</li>
+<li><code>DataCloneError</code> is host/runtime plus application layer: structured clone cannot serialize functions, so the callback property makes the whole message unclonable. Fix at the application layer: send plain data, keep callbacks on the sending side, and signal completion with a response message.</li>
+</ol>
 </details>
 
 ## Code To Trace

@@ -30,6 +30,30 @@
               "icon": "lucide-file",
               "title": "01 - ECMAScript vs JavaScript"
             }
+          },
+          {
+            "id": "cfd1743d2e54f3ba",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Notes.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Notes"
+            }
           }
         ]
       }
@@ -208,21 +232,23 @@
   },
   "active": "3b6e81b83ac9d410",
   "lastOpenFiles": [
+    "02 - JavaScript Runtime Foundations/02 - JavaScript Engine and Runtime.md",
+    "02 - JavaScript Runtime Foundations/01 - ECMAScript vs JavaScript.md",
+    "90 - Labs/06 - Frontend System Design Round Lab.md",
+    "Pasted image 20260724044212.png",
+    "Notes.md",
     "02 - JavaScript Runtime Foundations/00 - JavaScript Runtime Foundations MOC.md",
     "02 - JavaScript Runtime Foundations/07 - Runtime Foundations Checklist.md",
     "02 - JavaScript Runtime Foundations/06 - Realm Agent and Job Queue.md",
     "02 - JavaScript Runtime Foundations/05 - Memory Heap.md",
     "02 - JavaScript Runtime Foundations/04 - Call Stack.md",
     "02 - JavaScript Runtime Foundations/03 - Execution Context.md",
-    "02 - JavaScript Runtime Foundations/02 - JavaScript Engine and Runtime.md",
-    "02 - JavaScript Runtime Foundations/01 - ECMAScript vs JavaScript.md",
     "23 - TypeScript Deep Dive/11 - Erasable Syntax and Native TS Execution.md",
     "14 - JavaScript in React and Next.js/09 - Server vs Client JavaScript in Next.js.md",
     "01 - Roadmap.md",
     "00 - Start Here.md",
     "_Dashboard.md",
     "99 - Glossary.md",
-    "90 - Labs/06 - Frontend System Design Round Lab.md",
     "90 - Labs/00 - Labs MOC.md",
     "90 - Labs/05 - Code Review Lab - The Search Results PR.md",
     "90 - Labs/04 - Next Cached Dashboard Mutation Lab.md",
@@ -232,8 +258,6 @@
     "30 - Backend System Design/12 - Backend System Design Checklist.md",
     "30 - Backend System Design/11 - Deep-Dive Technologies.md",
     "30 - Backend System Design/09 - Numbers to Know.md",
-    "30 - Backend System Design/07 - CAP and Consistency.md",
-    "30 - Backend System Design/05 - Caching.md",
     "31 - Low Level Design",
     "30 - Backend System Design",
     "Base.base",

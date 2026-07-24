@@ -324,21 +324,15 @@ See [[13 - Performance and Memory/04 - Closures and Retained Memory|Closures and
 
 <details>
 <summary>Show answer</summary>
-
-1. Reachability means an object can be reached from roots such as globals, active stack frames, closures, host callbacks, DOM references, or framework caches. If a reachable path exists, the object must stay alive.
-
-2. `const a = {}; const b = a;` makes `a` and `b` hold references to the same object. `b.name = "x"` is visible through `a.name`.
-
-3. In a listener leak, the retaining path might be `window -> resize listener list -> handleResize function -> closed-over component data`. Removing the listener breaks the host reference so the closed-over data can be collected when nothing else reaches it.
-
-4. A module-level cache is reachable for as long as the module instance is reachable. If it grows with every search query or user id and never evicts, old data stays alive even when it has no business value.
-
-5. React effect cleanup removes host/runtime references: event listeners, timers, subscriptions, sockets, and in-flight request callbacks. Cleanup is what aligns component lifetime with external resource lifetime.
-
-6. `new Array(5)` creates an array of size 5 filled with holes (`HOLEY_SMI_ELEMENTS`). Accessing a holey array is slower because the engine must check the prototype chain (`Array.prototype`, `Object.prototype`) for an indexed property before returning `undefined`, which disables the packed fast path. `[1, 2, 3, 4, 5]` is `PACKED_SMI_ELEMENTS` with direct fast-path index access. Note `new Array(5).fill(0)` is packed, so preallocate-and-fill is fine.
-
-7. Use a `WeakMap` when you want to associate metadata with a key object, and have that metadata automatically cleared when the key object is collected. Use a `WeakRef` when you want to hold a reference to an object itself without keeping it alive (e.g., in a cache values mapping, or canvas buffers) and retrieve it if it still exists.
-
+<ol>
+<li>Reachability means an object can be reached from roots such as globals, active stack frames, closures, host callbacks, DOM references, or framework caches. If a reachable path exists, the object must stay alive.</li>
+<li><code>const a = {}; const b = a;</code> makes <code>a</code> and <code>b</code> hold references to the same object. <code>b.name = "x"</code> is visible through <code>a.name</code>.</li>
+<li>In a listener leak, the retaining path might be <code>window -&gt; resize listener list -&gt; handleResize function -&gt; closed-over component data</code>. Removing the listener breaks the host reference so the closed-over data can be collected when nothing else reaches it.</li>
+<li>A module-level cache is reachable for as long as the module instance is reachable. If it grows with every search query or user id and never evicts, old data stays alive even when it has no business value.</li>
+<li>React effect cleanup removes host/runtime references: event listeners, timers, subscriptions, sockets, and in-flight request callbacks. Cleanup is what aligns component lifetime with external resource lifetime.</li>
+<li><code>new Array(5)</code> creates an array of size 5 filled with holes (<code>HOLEY_SMI_ELEMENTS</code>). Accessing a holey array is slower because the engine must check the prototype chain (<code>Array.prototype</code>, <code>Object.prototype</code>) for an indexed property before returning <code>undefined</code>, which disables the packed fast path. <code>[1, 2, 3, 4, 5]</code> is <code>PACKED_SMI_ELEMENTS</code> with direct fast-path index access. Note <code>new Array(5).fill(0)</code> is packed, so preallocate-and-fill is fine.</li>
+<li>Use a <code>WeakMap</code> when you want to associate metadata with a key object, and have that metadata automatically cleared when the key object is collected. Use a <code>WeakRef</code> when you want to hold a reference to an object itself without keeping it alive (e.g., in a cache values mapping, or canvas buffers) and retrieve it if it still exists.</li>
+</ol>
 </details>
 
 ## Related Notes

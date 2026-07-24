@@ -324,21 +324,15 @@ The same tiered-compilation model you learn for browsers explains server latency
 
 <details>
 <summary>Show answer</summary>
-
-1. The engine owns parsing/executing ECMAScript and managing execution contexts, object allocation, optimization, and garbage collection. The runtime owns host APIs such as DOM, timers, fetch/networking, file APIs, event-loop integration, and rendering.
-
-2. V8 implements ECMAScript. Chrome embeds V8 in a browser runtime with `window`, DOM, rendering, storage, and Web APIs. Node.js embeds V8 in a server runtime with `process`, filesystem, streams, and server I/O. Same engine, different host capabilities.
-
-3. CPU-heavy JavaScript runs on the current execution stack. While the stack is busy, the browser cannot run input handlers or paint updates on that same main-thread event loop. Async APIs do not make synchronous CPU work disappear.
-
-4. `useMemo` helps when an expensive calculation can be skipped because dependencies are stable. It does not help if dependencies change every render, if rendering thousands of rows is the bottleneck, if the work should happen on a worker/server, or if the calculation is cheap and memoization adds complexity.
-
-5. Interview version: "A JavaScript engine executes ECMAScript: parsing, compiling, running code, managing contexts and memory. A runtime embeds that engine and adds host capabilities like DOM, timers, fetch, files, event-loop integration, and rendering. That is why `Array` exists everywhere, but `window` is browser-specific and `fs` is Node-specific."
-
-6. A monomorphic call site is a property access or call that has only ever seen one hidden class. The engine caches that shape in an inline cache, so the access becomes a single shape check plus a direct offset read, and optimizing compilers can specialize on it. Sites that see many shapes (megamorphic) fall back to generic, much slower lookup.
-
-7. Property insertion order determines the chain of shape transitions. Two objects with identical properties added in different orders end up with different hidden classes, so code that reads them stops being monomorphic. Creating objects with a consistent literal shape (same keys, same order, nullable fields instead of conditional keys) keeps downstream accesses on the fast path.
-
+<ol>
+<li>The engine owns parsing/executing ECMAScript and managing execution contexts, object allocation, optimization, and garbage collection. The runtime owns host APIs such as DOM, timers, fetch/networking, file APIs, event-loop integration, and rendering.</li>
+<li>V8 implements ECMAScript. Chrome embeds V8 in a browser runtime with <code>window</code>, DOM, rendering, storage, and Web APIs. Node.js embeds V8 in a server runtime with <code>process</code>, filesystem, streams, and server I/O. Same engine, different host capabilities.</li>
+<li>CPU-heavy JavaScript runs on the current execution stack. While the stack is busy, the browser cannot run input handlers or paint updates on that same main-thread event loop. Async APIs do not make synchronous CPU work disappear.</li>
+<li><code>useMemo</code> helps when an expensive calculation can be skipped because dependencies are stable. It does not help if dependencies change every render, if rendering thousands of rows is the bottleneck, if the work should happen on a worker/server, or if the calculation is cheap and memoization adds complexity.</li>
+<li>Interview version: "A JavaScript engine executes ECMAScript: parsing, compiling, running code, managing contexts and memory. A runtime embeds that engine and adds host capabilities like DOM, timers, fetch, files, event-loop integration, and rendering. That is why <code>Array</code> exists everywhere, but <code>window</code> is browser-specific and <code>fs</code> is Node-specific."</li>
+<li>A monomorphic call site is a property access or call that has only ever seen one hidden class. The engine caches that shape in an inline cache, so the access becomes a single shape check plus a direct offset read, and optimizing compilers can specialize on it. Sites that see many shapes (megamorphic) fall back to generic, much slower lookup.</li>
+<li>Property insertion order determines the chain of shape transitions. Two objects with identical properties added in different orders end up with different hidden classes, so code that reads them stops being monomorphic. Creating objects with a consistent literal shape (same keys, same order, nullable fields instead of conditional keys) keeps downstream accesses on the fast path.</li>
+</ol>
 </details>
 
 ## Related Notes

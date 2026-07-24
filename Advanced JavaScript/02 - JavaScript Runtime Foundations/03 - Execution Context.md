@@ -263,17 +263,13 @@ Each window/iframe is a separate **realm** with its own intrinsics — the ifram
 
 <details>
 <summary>Show answer</summary>
-
-1. For `a()` calling `b()` calling `c()`, the stack is global/script context, then `a`, then `b`, then `c`. When `c` returns, `c` pops; then `b`; then `a`.
-
-2. During preparation, a `var` binding is created and initialized to `undefined`. A `let` binding is created too, but remains uninitialized until its declaration executes. Reading it early is a TDZ `ReferenceError`.
-
-3. It closes over the lexical environment from the render/function call that created it. In React, each render is a new function call with new local bindings, so an old callback can keep reading old render values.
-
-4. The async function's continuation is suspended. The call stack can clear and other work can run. When the awaited promise settles, the continuation is scheduled through promise-job/microtask behavior.
-
-5. A strong explanation: "A closure works because a function object keeps a reference to the lexical environment from the execution context where it was created. Even after that context is no longer on the call stack, the environment can stay reachable through the function."
-
+<ol>
+<li>For <code>a()</code> calling <code>b()</code> calling <code>c()</code>, the stack is global/script context, then <code>a</code>, then <code>b</code>, then <code>c</code>. When <code>c</code> returns, <code>c</code> pops; then <code>b</code>; then <code>a</code>.</li>
+<li>During preparation, a <code>var</code> binding is created and initialized to <code>undefined</code>. A <code>let</code> binding is created too, but remains uninitialized until its declaration executes. Reading it early is a TDZ <code>ReferenceError</code>.</li>
+<li>It closes over the lexical environment from the render/function call that created it. In React, each render is a new function call with new local bindings, so an old callback can keep reading old render values.</li>
+<li>The async function's continuation is suspended. The call stack can clear and other work can run. When the awaited promise settles, the continuation is scheduled through promise-job/microtask behavior.</li>
+<li>A strong explanation: "A closure works because a function object keeps a reference to the lexical environment from the execution context where it was created. Even after that context is no longer on the call stack, the environment can stay reachable through the function."</li>
+</ol>
 </details>
 
 ## Related Notes

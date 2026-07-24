@@ -305,23 +305,16 @@ function validatePayload(payload) {
 
 <details>
 <summary>Show answer</summary>
-
-1. The value was created in another realm, so its prototype chain points to that realm's `Array.prototype`, not the current realm's `Array.prototype`. `instanceof Array` checks against the current constructor/prototype relationship.
-
-2. `Array.isArray(value)` is safer because it checks the array brand rather than relying on the current realm's constructor.
-
-3. A Worker moves CPU work away from the main UI execution unit, improving responsiveness. It costs message passing, structured clone or transfer design, separate lifecycle, no direct DOM access, bundling complexity, and explicit error/cancellation protocol.
-
-4. `.then(fn)` registers a promise reaction. Even for an already fulfilled promise, the reaction runs later as a promise job/microtask after the current synchronous stack finishes.
-
-5. If each microtask schedules another microtask, the microtask queue may never drain. The browser keeps processing microtasks and may not reach later tasks or rendering opportunities, so the page appears frozen.
-
-6. `SharedArrayBuffer` is disabled by default to prevent Spectre-style side-channel CPU timing attacks that could read memory across processes. To enable it, the host server must send `Cross-Origin-Opener-Policy: same-origin` (COOP) and `Cross-Origin-Embedder-Policy: require-corp` (COEP) headers to opt into cross-origin isolation.
-
-7. Plain objects, arrays, `Map`, `Set`, `Date`, `RegExp`, `ArrayBuffer`, typed arrays, and cyclic references survive structured clone. Functions and DOM nodes throw `DataCloneError`. Class instances survive as plain objects: own data properties arrive, but the prototype chain — methods, getters, `instanceof` identity — is lost. Fix: send plain data and rehydrate into classes on the receiving side.
-
-8. Transfer when the data is large and the sender no longer needs it — parsed file bytes, image pixels, audio buffers. `postMessage(data, [buffer])` moves ownership with zero copy; the sender's buffer is detached (`byteLength` becomes 0, contents inaccessible). Clone when both sides still need the data, and accept the copy cost.
-
+<ol>
+<li>The value was created in another realm, so its prototype chain points to that realm's <code>Array.prototype</code>, not the current realm's <code>Array.prototype</code>. <code>instanceof Array</code> checks against the current constructor/prototype relationship.</li>
+<li><code>Array.isArray(value)</code> is safer because it checks the array brand rather than relying on the current realm's constructor.</li>
+<li>A Worker moves CPU work away from the main UI execution unit, improving responsiveness. It costs message passing, structured clone or transfer design, separate lifecycle, no direct DOM access, bundling complexity, and explicit error/cancellation protocol.</li>
+<li><code>.then(fn)</code> registers a promise reaction. Even for an already fulfilled promise, the reaction runs later as a promise job/microtask after the current synchronous stack finishes.</li>
+<li>If each microtask schedules another microtask, the microtask queue may never drain. The browser keeps processing microtasks and may not reach later tasks or rendering opportunities, so the page appears frozen.</li>
+<li><code>SharedArrayBuffer</code> is disabled by default to prevent Spectre-style side-channel CPU timing attacks that could read memory across processes. To enable it, the host server must send <code>Cross-Origin-Opener-Policy: same-origin</code> (COOP) and <code>Cross-Origin-Embedder-Policy: require-corp</code> (COEP) headers to opt into cross-origin isolation.</li>
+<li>Plain objects, arrays, <code>Map</code>, <code>Set</code>, <code>Date</code>, <code>RegExp</code>, <code>ArrayBuffer</code>, typed arrays, and cyclic references survive structured clone. Functions and DOM nodes throw <code>DataCloneError</code>. Class instances survive as plain objects: own data properties arrive, but the prototype chain — methods, getters, <code>instanceof</code> identity — is lost. Fix: send plain data and rehydrate into classes on the receiving side.</li>
+<li>Transfer when the data is large and the sender no longer needs it — parsed file bytes, image pixels, audio buffers. <code>postMessage(data, [buffer])</code> moves ownership with zero copy; the sender's buffer is detached (<code>byteLength</code> becomes 0, contents inaccessible). Clone when both sides still need the data, and accept the copy cost.</li>
+</ol>
 </details>
 
 ## Related Notes

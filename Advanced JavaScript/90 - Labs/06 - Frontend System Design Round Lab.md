@@ -58,80 +58,62 @@ Score each axis /5 (total /30). A phase only counts if you *justified* the choic
 
 Open only after your timed round. This is a *coverage key*, not the only correct answer.
 
-<details>
-<summary>R — Requirements</summary>
+> [!note]- R — Requirements
+> - **Functional:** drag-drop + file-picker input; multiple files at once; per-file progress; cancel a file; retry a failed file; overall "N of M done"; success/error per file.
+> - **Non-functional:** large files (100s of MB) without freezing the tab; resilient to flaky networks (retry/resume); accessible (keyboard operable, progress announced); don't melt the network with 50 parallel uploads.
+> - **Scope cut (say it):** no image editing/cropping, no folder upload, no resumable-chunk protocol unless asked (mention it as the scale-up).
+> - **The requirement that shapes it:** *large files + many at once* → uploads must go direct-to-storage (not through your app), must be concurrency-limited, and progress/state is per-file.
 
-- **Functional:** drag-drop + file-picker input; multiple files at once; per-file progress; cancel a file; retry a failed file; overall "N of M done"; success/error per file.
-- **Non-functional:** large files (100s of MB) without freezing the tab; resilient to flaky networks (retry/resume); accessible (keyboard operable, progress announced); don't melt the network with 50 parallel uploads.
-- **Scope cut (say it):** no image editing/cropping, no folder upload, no resumable-chunk protocol unless asked (mention it as the scale-up).
-- **The requirement that shapes it:** *large files + many at once* → uploads must go direct-to-storage (not through your app), must be concurrency-limited, and progress/state is per-file.
-</details>
+> [!note]- A — Architecture
+> - `<Uploader>` (drop zone + file input + list) → an **upload controller** (owns the queue, concurrency limit, per-file state machine) → a **transfer layer** (per-file `XMLHttpRequest`/`fetch` with progress events) → object storage via **presigned URLs**.
+> - Flow: select files → controller enqueues each as `queued` → a **semaphore-style limiter** (e.g. 3 in flight) pulls from the queue → request a presigned URL from your API → PUT bytes directly to S3 → notify API "done" → mark `succeeded`.
+> - Why direct-to-storage: streaming megabytes through app servers ties up request threads and buffers memory — the [[30 - Backend System Design/10 - The Seven Access Patterns|Large Blobs]] pattern.
 
-<details>
-<summary>A — Architecture</summary>
+> [!note]- D — Data model
+> ```ts
+> type UploadStatus = "queued" | "uploading" | "succeeded" | "failed" | "canceled";
+> interface UploadItem {
+>   id: string;            // clientId
+>   file: File;
+>   status: UploadStatus;
+>   progress: number;      // 0..1, from XHR progress events
+>   error?: string;
+>   abort?: () => void;    // to cancel an in-flight PUT
+> }
+> // state: Map<string, UploadItem> keyed by clientId; derived "N of M" is computed, not stored
+> ```
+>
+> - Per-file state machine (queued → uploading → succeeded/failed/canceled); failed is retryable back to queued.
+> - This is UI/transient state (not server cache) — it lives in the controller, not a query cache. Overall counts are *derived*, never a separate source of truth.
 
-- `<Uploader>` (drop zone + file input + list) → an **upload controller** (owns the queue, concurrency limit, per-file state machine) → a **transfer layer** (per-file `XMLHttpRequest`/`fetch` with progress events) → object storage via **presigned URLs**.
-- Flow: select files → controller enqueues each as `queued` → a **semaphore-style limiter** (e.g. 3 in flight) pulls from the queue → request a presigned URL from your API → PUT bytes directly to S3 → notify API "done" → mark `succeeded`.
-- Why direct-to-storage: streaming megabytes through app servers ties up request threads and buffers memory — the [[30 - Backend System Design/10 - The Seven Access Patterns|Large Blobs]] pattern.
-</details>
+> [!note]- I — Interface (both APIs)
+> **Component API (IoC keeps it reusable):**
+> ```tsx
+> <Uploader
+>   accept="image/*,application/pdf"
+>   maxConcurrent={3}
+>   getUploadUrl={(file) => api.presign(file.name, file.type)}  // inversion of control
+>   onItemComplete={(item) => {}}
+>   onAllComplete={(items) => {}}
+> />
+> ```
+>
+> **Network API:**
+> - `POST /uploads/presign` → `{ url, fields, objectKey }` (short-lived signed PUT).
+> - `PUT <presigned url>` directly to storage (not your API); progress via `XHR.upload.onprogress`.
+> - `POST /uploads/complete` `{ objectKey }` → server records it, kicks off async validation/virus scan, returns a `pending` asset that flips to `ready`.
 
-<details>
-<summary>D — Data model</summary>
+> [!note]- O — Optimizations (ranked by requirement)
+> 1. **Responsiveness (INP):** never block the main thread — uploads are I/O; if you hash/preview large files, do it in a Web Worker. Progress updates batched (don't `setState` on every byte; throttle or rAF).
+> 2. **Network health:** concurrency limiter (3–6 in flight) — the client [[31 - Low Level Design/05 - Concurrency Foundations|semaphore]]; exponential backoff **with jitter** on retry; resumable/chunked upload as the scale-up for huge files.
+> 3. **Resilience:** per-file retry without restarting the batch; cancel via `AbortController`; on reload, an outbox in IndexedDB could resume (mention, scope out).
+> 4. **Accessibility:** the list is a live region so progress/completion is announced (`aria-live="polite"`, errors assertive); the drop zone has a real `<input type="file">` fallback and is keyboard operable; per-file remove/retry are real `<button>`s ([[29 - Frontend System Design/14 - Accessibility in System Design|a11y in design]]).
+> 5. **CLS/perception:** reserve the list row height so appending files doesn't shift layout; show optimistic "queued" rows immediately.
 
-```ts
-type UploadStatus = "queued" | "uploading" | "succeeded" | "failed" | "canceled";
-interface UploadItem {
-  id: string;            // clientId
-  file: File;
-  status: UploadStatus;
-  progress: number;      // 0..1, from XHR progress events
-  error?: string;
-  abort?: () => void;    // to cancel an in-flight PUT
-}
-// state: Map<string, UploadItem> keyed by clientId; derived "N of M" is computed, not stored
-```
-
-- Per-file state machine (queued → uploading → succeeded/failed/canceled); failed is retryable back to queued.
-- This is UI/transient state (not server cache) — it lives in the controller, not a query cache. Overall counts are *derived*, never a separate source of truth.
-</details>
-
-<details>
-<summary>I — Interface (both APIs)</summary>
-
-**Component API (IoC keeps it reusable):**
-```tsx
-<Uploader
-  accept="image/*,application/pdf"
-  maxConcurrent={3}
-  getUploadUrl={(file) => api.presign(file.name, file.type)}  // inversion of control
-  onItemComplete={(item) => {}}
-  onAllComplete={(items) => {}}
-/>
-```
-
-**Network API:**
-- `POST /uploads/presign` → `{ url, fields, objectKey }` (short-lived signed PUT).
-- `PUT <presigned url>` directly to storage (not your API); progress via `XHR.upload.onprogress`.
-- `POST /uploads/complete` `{ objectKey }` → server records it, kicks off async validation/virus scan, returns a `pending` asset that flips to `ready`.
-</details>
-
-<details>
-<summary>O — Optimizations (ranked by requirement)</summary>
-
-1. **Responsiveness (INP):** never block the main thread — uploads are I/O; if you hash/preview large files, do it in a Web Worker. Progress updates batched (don't `setState` on every byte; throttle or rAF).
-2. **Network health:** concurrency limiter (3–6 in flight) — the client [[31 - Low Level Design/05 - Concurrency Foundations|semaphore]]; exponential backoff **with jitter** on retry; resumable/chunked upload as the scale-up for huge files.
-3. **Resilience:** per-file retry without restarting the batch; cancel via `AbortController`; on reload, an outbox in IndexedDB could resume (mention, scope out).
-4. **Accessibility:** the list is a live region so progress/completion is announced (`aria-live="polite"`, errors assertive); the drop zone has a real `<input type="file">` fallback and is keyboard operable; per-file remove/retry are real `<button>`s ([[29 - Frontend System Design/14 - Accessibility in System Design|a11y in design]]).
-5. **CLS/perception:** reserve the list row height so appending files doesn't shift layout; show optimistic "queued" rows immediately.
-</details>
-
-<details>
-<summary>Tradeoffs to name out loud</summary>
-
-- Direct-to-storage means validation/scanning can't be inline — do it async and hold the asset `pending` (a small UX state) rather than blocking the upload.
-- A fixed concurrency limit trades peak throughput for stability; too low wastes bandwidth, too high reproduces the overload.
-- Full resumable chunked upload is real complexity — justified only when files are large enough that a failed 90%-done upload is unacceptable. Say when you'd add it.
-</details>
+> [!note]- Tradeoffs to name out loud
+> - Direct-to-storage means validation/scanning can't be inline — do it async and hold the asset `pending` (a small UX state) rather than blocking the upload.
+> - A fixed concurrency limit trades peak throughput for stability; too low wastes bandwidth, too high reproduces the overload.
+> - Full resumable chunked upload is real complexity — justified only when files are large enough that a failed 90%-done upload is unacceptable. Say when you'd add it.
 
 ## After the Round
 

@@ -260,32 +260,27 @@ A stack trace is a snapshot of the synchronous call path at the moment it is cap
 
 <details>
 <summary>Show answer</summary>
+<ol>
+<li>The stack starts with the current script/global context. Calling <code>a</code> pushes <code>a</code>; <code>a</code> calls <code>b</code>, pushing <code>b</code>; <code>b</code> calls <code>c</code>, pushing <code>c</code>. Returning unwinds in reverse order: <code>c</code>, <code>b</code>, <code>a</code>.</li>
+<li>JavaScript runs the current stack to completion. A timer callback is a later host task; it cannot interrupt a synchronous loop that is still occupying the stack.</li>
+<li>Infinite or extremely deep recursion keeps pushing frames until the engine limit is exceeded, usually producing <code>RangeError: Maximum call stack size exceeded</code>. Rewrite with an explicit stack/queue:
 
-1. The stack starts with the current script/global context. Calling `a` pushes `a`; `a` calls `b`, pushing `b`; `b` calls `c`, pushing `c`. Returning unwinds in reverse order: `c`, `b`, `a`.
 
-2. JavaScript runs the current stack to completion. A timer callback is a later host task; it cannot interrupt a synchronous loop that is still occupying the stack.
-
-3. Infinite or extremely deep recursion keeps pushing frames until the engine limit is exceeded, usually producing `RangeError: Maximum call stack size exceeded`. Rewrite with an explicit stack/queue:
-
-```js
-function countNodes(root) {
+<pre><code>function countNodes(root) {
   let count = 0;
   const stack = [root];
 
-  while (stack.length > 0) {
+  while (stack.length &gt; 0) {
     const node = stack.pop();
     count += 1;
     stack.push(...node.children);
   }
 
   return count;
-}
-```
-
-4. A stack trace shows the synchronous call path that led to an error. It may not show the full user journey, request lifecycle, promise chain, or previous render that scheduled the callback.
-
-5. Event-loop output questions start with the stack: synchronous logs run first because the current stack must empty before promise jobs, microtasks, timers, or UI events run.
-
+}</code></pre></li>
+<li>A stack trace shows the synchronous call path that led to an error. It may not show the full user journey, request lifecycle, promise chain, or previous render that scheduled the callback.</li>
+<li>Event-loop output questions start with the stack: synchronous logs run first because the current stack must empty before promise jobs, microtasks, timers, or UI events run.</li>
+</ol>
 </details>
 
 ## Related Notes

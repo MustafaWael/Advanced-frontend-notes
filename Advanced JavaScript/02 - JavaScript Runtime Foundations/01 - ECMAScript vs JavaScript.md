@@ -1,8 +1,13 @@
 ---
-tags: [javascript, runtime, ecmascript-vs-javascript]
-module: "02 - JavaScript Runtime Foundations"
+tags:
+  - javascript
+  - runtime
+  - ecmascript-vs-javascript
+module: 02 - JavaScript Runtime Foundations
 priority: must-know
 status: not-started
+verified_on: 2026-07-23
+version_scope: TC39 process (stage 2.7 added late 2023); Node global fetch (v18+); WinterTC / Ecma TC55; Next.js 16 proxy.ts (renamed from middleware.ts)
 ---
 
 # ECMAScript vs JavaScript
@@ -135,17 +140,17 @@ const response = await fetch("/api/users");
 
 New language features move through TC39's staged process before landing in the annual ECMAScript edition:
 
-| Stage | Meaning                                                                           |
-| ----- | --------------------------------------------------------------------------------- |
-| 0     | Strawperson — an idea.                                                            |
-| 1     | Proposal — problem accepted as worth solving.                                     |
-| 2     | Draft — initial spec text exists.                                                 |
-| 2.7   | Approved for implementation and testing (added to the process in 2023).           |
-| 3     | Candidate — spec complete; engines implement and gather feedback.                 |
-| 4     | Finished — two+ implementations, tests pass; merged into the next annual edition. |
+| Stage | Meaning                                                                             |
+| ----- | ----------------------------------------------------------------------------------- |
+| 0     | Strawperson — an idea.                                                              |
+| 1     | Proposal — problem accepted as worth solving.                                       |
+| 2     | Draft — initial spec text exists.                                                   |
+| 2.7   | Approved for implementation and testing (added to the process in 2023).             |
+| 3     | Candidate — tests written; awaiting native implementations and real-world feedback. |
+| 4     | Finished — two+ implementations, tests pass; merged into the next annual edition.   |
 
 > [!warning] Stage 3 is not "safe to rely on"
-> Stage 3 proposals have been changed or demoted after real-world feedback (`Array.prototype.groupBy` was renamed because it broke websites; ShadowRealm moved back from 3 to 2.7). Only stage 4 is finished. In production, "the proposal exists" and "my target runtimes ship it" are separate questions.
+> Stage 3 proposals have been changed or demoted after real-world feedback (`Array.prototype.group` was renamed — eventually to the static `Object.groupBy`/`Map.groupBy` — because the prototype method broke websites; ShadowRealm was demoted from stage 3 back to stage 2 in September 2023 over unresolved web-platform integration, and has since only climbed back to 2.7). Only stage 4 is finished. In production, "the proposal exists" and "my target runtimes ship it" are separate questions.
 
 ### Server Runtimes Converge: WinterTC
 
@@ -220,13 +225,15 @@ function ThemeReader() {
 
 ### Sharing validation code across browser, server, and edge middleware
 
-Next.js middleware runs on an edge runtime that exposes roughly the WinterTC Minimum Common Web API — no Node APIs, no DOM. A session-parsing helper survives all three environments only if it sticks to ECMAScript plus common Web APIs.
+Next.js's proxy layer (`proxy.ts`, renamed from `middleware.ts` in Next.js 16) runs on an edge runtime that exposes roughly the WinterTC Minimum Common Web API — no Node APIs, no DOM. A shared URL-building helper survives all three environments only if it sticks to ECMAScript plus common Web APIs.
 
 ```ts
-// lib/parse-session.ts — imported by middleware.ts, a Server Component, and a Client Component
-export function parseSessionPayload(token: string) {
-  const [, payload] = token.split(".");
-  return JSON.parse(atob(payload)); // atob: common Web API; JSON, split: ECMAScript
+// lib/build-search-url.ts — imported by proxy.ts, a Server Component, and a Client Component
+export function buildSearchUrl(base: string, filters: Record<string, string>) {
+  const url = new URL(base);                          // URL: common Web API
+  for (const [key, value] of Object.entries(filters)) // Object.entries, for..of: ECMAScript
+    url.searchParams.set(key, value);                 // URLSearchParams: common Web API
+  return url.toString();
 }
 
 // This one line would break the edge build — fs is a Node host API:
@@ -240,10 +247,13 @@ What runs where is decided by the host layer, not the language: the syntax is po
 You move product-search indexing into a Web Worker for responsiveness, and a shared telemetry util imported by the index code throws `ReferenceError: window is not defined`. Workers run the same ECMAScript but a different host global scope.
 
 ```ts
-// utils/telemetry.ts
+// utils/telemetry.ts — before
 // Crashes in a worker: window is a main-thread browser global, not a language feature.
 const page = window.location.pathname;
+```
 
+```ts
+// utils/telemetry.ts — after
 // Worker-safe: globalThis is ECMAScript (ES2020) and exists in every runtime;
 // guard the host-specific part explicitly.
 const page =
@@ -298,17 +308,13 @@ export async function getOrders(): Promise<Order[]> {
 
 <details>
 <summary>Show answer</summary>
-
-1. ECMAScript is the language specification. An engine implements that language. A runtime embeds the engine and adds environment APIs, scheduling, I/O, rendering, or framework boundaries.
-
-2. `Promise`, `Map`, and `import` are ECMAScript language/module features. `fetch`, `document`, and `setTimeout` are browser/host APIs, although some non-browser runtimes also provide compatible versions. `process` is Node.js runtime API. `useEffect` is React framework API.
-
-3. `Promise` is part of ECMAScript, so compliant engines expose it across browsers and Node.js. `window` is the browser global object, so Node.js and server runtimes do not expose it by default.
-
-4. The import can evaluate on the server or in a non-browser build step. If the module reads `window` at top level, evaluation throws before React can defer it to an effect. The fix is to move the browser read into a Client Component/effect or isolate it behind a client-only boundary.
-
-5. A good interview correction: "`setTimeout` is not part of ECMAScript itself. It is a host API provided by browsers and also by runtimes such as Node.js. ECMAScript defines promises and jobs; the host integrates timers, tasks, and event-loop behavior."
-
+<ol>
+<li>ECMAScript is the language specification. An engine implements that language. A runtime embeds the engine and adds environment APIs, scheduling, I/O, rendering, or framework boundaries.</li>
+<li><code>Promise</code>, <code>Map</code>, and <code>import</code> are ECMAScript language/module features. <code>fetch</code>, <code>document</code>, and <code>setTimeout</code> are browser/host APIs, although some non-browser runtimes also provide compatible versions. <code>process</code> is Node.js runtime API. <code>useEffect</code> is React framework API.</li>
+<li><code>Promise</code> is part of ECMAScript, so compliant engines expose it across browsers and Node.js. <code>window</code> is the browser global object, so Node.js and server runtimes do not expose it by default.</li>
+<li>The import can evaluate on the server or in a non-browser build step. If the module reads <code>window</code> at top level, evaluation throws before React can defer it to an effect. The fix is to move the browser read into a Client Component/effect or isolate it behind a client-only boundary.</li>
+<li>A good interview correction: "<code>setTimeout</code> is not part of ECMAScript itself. It is a host API provided by browsers and also by runtimes such as Node.js. ECMAScript defines promises and jobs; the host integrates timers, tasks, and event-loop behavior."</li>
+</ol>
 </details>
 
 ## Related Notes
