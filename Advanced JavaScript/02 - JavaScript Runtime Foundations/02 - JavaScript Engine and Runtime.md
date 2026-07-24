@@ -3,6 +3,8 @@ tags: [javascript, runtime, javascript-engine-and-runtime]
 module: "02 - JavaScript Runtime Foundations"
 priority: must-know
 status: not-started
+verified_on: 2026-07-24
+version_scope: "V8 13.x era (Ignition/Sparkplug/Maglev/TurboFan+Turboshaft); Wasm deopt since Chrome M137"
 ---
 
 # JavaScript Engine and Runtime
@@ -70,7 +72,7 @@ V8's current pipeline is the concrete version of that diagram. SpiderMonkey and 
 | **Ignition** | Interpreter | Compiles source to bytecode, interprets it, and collects type feedback (which shapes and types each site sees). |
 | **Sparkplug** (2021) | Baseline compiler | Compiles bytecode to machine code in a single fast pass, no type feedback needed. Functions tier up from Ignition after roughly 8 invocations. |
 | **Maglev** (Chrome M117) | Mid-tier optimizing compiler | Uses collected feedback to generate good-enough optimized code quickly: roughly 10x slower to compile than Sparkplug, roughly 10x faster than TurboFan. |
-| **TurboFan** | Top-tier optimizing compiler | Spends real compile time on the hottest functions for peak machine code. Since 2025 its backend runs on **Turboshaft**, a CFG-based intermediate representation replacing the older Sea of Nodes design. |
+| **TurboFan** | Top-tier optimizing compiler | Spends real compile time on the hottest functions for peak machine code. As of 2025 its backend runs on **Turboshaft**, a CFG-based intermediate representation that has been progressively replacing the older Sea of Nodes design since Chrome 120 (2023). |
 
 **Deoptimization** applies to every optimizing tier: Maglev and TurboFan code embeds assumptions from type feedback ("this parameter is always a small integer", "this object always has this shape"). When an assumption breaks at runtime, the optimized code bails out back to a lower tier, and the function may be re-optimized later with updated feedback.
 
@@ -79,8 +81,11 @@ V8's current pipeline is the concrete version of that diagram. SpiderMonkey and 
 
 ### WebAssembly (Wasm) Compilation Bypass
 WebAssembly (`.wasm`) is a binary format that represents a stack-based virtual machine with statically typed instructions. 
-When V8 loads a Wasm binary, it completely **bypasses the frontend compilation pipeline** (skipping tokenization, parsing, and AST generation). V8's baseline WebAssembly compiler (Liftoff) compiles the Wasm bytecode directly to native machine code in a single, fast pass, which is then further optimized in the background by TurboFan.
-Because Wasm is statically typed, it **never de-optimizes (no JIT bailouts)**, enabling predictable, near-native execution performance for heavy calculations in the frontend (e.g. image filters, PDF layout calculations, or game engines).
+When V8 loads a Wasm binary, it completely **bypasses the frontend compilation pipeline** (skipping tokenization, parsing, and AST generation). V8's baseline WebAssembly compiler (Liftoff) compiles the Wasm bytecode directly to native machine code in a single, fast pass, which is then eagerly re-optimized in the background by TurboFan.
+Because Wasm is statically typed, it **skips the type-feedback warmup** that JS optimization depends on, so it reaches near-native speed on the first run — ideal for heavy calculations in the frontend (e.g. image filters, PDF layout calculations, or game engines). Historically Wasm also never deoptimized; note that this was a design choice (eager tier-up), not a strict consequence of static typing. Since **Chrome M137 (2025)**, V8 added *speculative* Wasm optimizations (e.g. `call_indirect` inlining) that **can** deopt, mainly benefiting WasmGC. The practical takeaway is unchanged: Wasm avoids the JS deopt-cliff pattern and gives predictable performance.
+
+> [!warning] "Wasm never deoptimizes" is now outdated
+> Repeating the absolute "Wasm never deopts" in an interview will date you. Say instead: Wasm skips type-feedback warmup and historically didn't deopt, but modern V8 (M137+) added speculative optimizations that can.
 
 The runtime wraps that engine with capabilities the engine itself does not own:
 
@@ -236,6 +241,8 @@ download JavaScript
 > [!warning] Unused JavaScript is not free
 > This is why "unused JavaScript" is not free. A utility module imported on every route can cost parse/evaluation time even if the user never opens the feature that needs it.
 
+To soften this, V8 **pre-parses** top-level code eagerly (a fast scan that finds function boundaries and syntax errors) but defers **full parsing + compilation** of each function body until it is first called — this is *lazy compilation*. It reduces startup cost but doesn't eliminate it: code that runs eagerly at module load (framework setup, top-level side effects) is fully parsed and compiled up front regardless.
+
 ```tsx
 // Better for rare, heavy UI: load at the interaction boundary.
 async function openChart() {
@@ -266,7 +273,7 @@ The engine/runtime split from this note is the triage plan: a long yellow block 
 
 ### Client-side image resize with WebAssembly before upload
 
-An avatar-upload flow resizes images in the browser to save bandwidth. Doing it with a Wasm codec (e.g. a Rust/squoosh module) instead of JS gives predictable performance on the first run — no warmup, no deopt cliffs.
+An avatar-upload flow resizes images in the browser to save bandwidth. Doing it with a Wasm codec (e.g. a Rust/squoosh module) instead of JS gives predictable performance on the first run — no type-feedback warmup and no JS-style deopt cliffs.
 
 ```ts
 async function makeThumbnail(file: File) {
@@ -337,6 +344,7 @@ The same tiered-compilation model you learn for browsers explains server latency
 
 ## Related Notes
 
+- [[02 - JavaScript Runtime Foundations/08 - Engine and Compilation Glossary|Engine and Compilation Glossary]] — plain-English definitions for every engine term used here.
 - [[02 - JavaScript Runtime Foundations/01 - ECMAScript vs JavaScript|ECMAScript vs JavaScript]]
 - [[02 - JavaScript Runtime Foundations/03 - Execution Context|Execution Context]]
 - [[02 - JavaScript Runtime Foundations/04 - Call Stack|Call Stack]]

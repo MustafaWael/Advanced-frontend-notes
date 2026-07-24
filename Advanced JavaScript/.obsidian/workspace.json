@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "02 - JavaScript Runtime Foundations/01 - ECMAScript vs JavaScript.md",
+                "file": "02 - JavaScript Runtime Foundations/00 - JavaScript Runtime Foundations MOC.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -28,7 +28,7 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "01 - ECMAScript vs JavaScript"
+              "title": "00 - JavaScript Runtime Foundations MOC"
             }
           },
           {
@@ -232,12 +232,13 @@
   },
   "active": "3b6e81b83ac9d410",
   "lastOpenFiles": [
+    "02 - JavaScript Runtime Foundations/08 - Engine and Compilation Glossary.md",
+    "02 - JavaScript Runtime Foundations/00 - JavaScript Runtime Foundations MOC.md",
     "02 - JavaScript Runtime Foundations/02 - JavaScript Engine and Runtime.md",
     "02 - JavaScript Runtime Foundations/01 - ECMAScript vs JavaScript.md",
     "90 - Labs/06 - Frontend System Design Round Lab.md",
     "Pasted image 20260724044212.png",
     "Notes.md",
-    "02 - JavaScript Runtime Foundations/00 - JavaScript Runtime Foundations MOC.md",
     "02 - JavaScript Runtime Foundations/07 - Runtime Foundations Checklist.md",
     "02 - JavaScript Runtime Foundations/06 - Realm Agent and Job Queue.md",
     "02 - JavaScript Runtime Foundations/05 - Memory Heap.md",

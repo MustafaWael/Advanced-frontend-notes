@@ -24,6 +24,10 @@ This module teaches the machine model behind every JavaScript line you write: wh
 6. [[02 - JavaScript Runtime Foundations/06 - Realm Agent and Job Queue|Realm Agent and Job Queue]] — worlds, workers, and why promise reactions never run synchronously.
 7. [[02 - JavaScript Runtime Foundations/07 - Runtime Foundations Checklist|Runtime Foundations Checklist]] — active self-test to prove the module is mature.
 
+## Companion References
+
+- [[02 - JavaScript Runtime Foundations/08 - Engine and Compilation Glossary|Engine and Compilation Glossary]] — plain-English lookup for engine jargon (bytecode, tiers, deopt, hidden classes, inline caches); read before note 02 if engine internals are new.
+
 ## You're Done When
 
 - [ ] I can explain ECMAScript as the spec and JavaScript as host implementations, and sort features into language vs host (DOM, `fetch`, timers).
