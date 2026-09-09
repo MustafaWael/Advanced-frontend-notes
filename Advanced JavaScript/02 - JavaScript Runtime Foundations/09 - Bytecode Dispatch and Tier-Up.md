@@ -14,7 +14,7 @@ version_scope: "V8 13.x era (Ignition, Sparkplug, Maglev, TurboFan/Turboshaft); 
 
 - Priority: #deep-dive
 - Study time: 45 minutes
-- Interview signal: you can explain what "the interpreter runs the bytecode" actually means mechanically — that there is no interpreter loop, that the handlers were compiled before your code existed, and that tier-up is driven by a decrementing budget rather than a naive call counter.
+- Interview signal: you can explain what "the interpreter runs the bytecode" actually means mechanically — that there is no central dispatch loop, that the handlers were compiled before your code existed, and that tier-up is driven by a decrementing budget rather than a naive call counter.
 - Production signal: you stop reasoning about warm-up and micro-benchmarks by folklore. You can explain why a once-called hot loop still gets optimized, why a fresh Node process is slow for a minute, and why an idle tab's "already optimized" code can be thrown away.
 - Dependencies: [[02 - JavaScript Runtime Foundations/02 - JavaScript Engine and Runtime|JavaScript Engine and Runtime]], [[02 - JavaScript Runtime Foundations/04 - Call Stack|Call Stack]], [[02 - JavaScript Runtime Foundations/08 - Engine and Compilation Glossary|Engine and Compilation Glossary]]
 
@@ -24,7 +24,8 @@ version_scope: "V8 13.x era (Ignition, Sparkplug, Maglev, TurboFan/Turboshaft); 
 - [V8 blog - Sparkplug: a non-optimizing JavaScript compiler](https://v8.dev/blog/sparkplug)
 - [V8 blog - Maglev: V8's fastest optimizing JIT](https://v8.dev/blog/maglev)
 - [V8 Ignition design doc](https://docs.google.com/document/d/11T2CRex9hXxoJwbYqVQ32yIPMh0uouUZLdyrtmMoL44/mobilebasic)
-- [V8 blog - Lazy deserialization / code flushing context](https://v8.dev/blog/short-builtin-calls)
+- [V8 blog - Short builtin calls](https://v8.dev/blog/short-builtin-calls) — builtins are embedded in the binary; this is the call-distance consequence
+- [V8 blog - A lighter V8](https://v8.dev/blog/v8-lite) — bytecode flushing and lazy feedback allocation
 
 ## 1. Concept
 
@@ -36,7 +37,7 @@ The accurate mechanism, in five claims:
 
 1. **Compilation is per compilation unit, not per file and not per line.** A unit is the top level of a script, *each function body*, each module, each `eval` call. Nothing is left over — there is no "the rest of the code" category.
 2. **Bytecode is the source of truth.** The AST is freed once bytecode exists. Every higher tier compiles *from* bytecode, and deoptimization returns *to* bytecode. Machine code is a disposable cache layered on top.
-3. **There is no interpreter loop.** V8 uses indirect *threaded dispatch*: each bytecode handler ends with a tail call that jumps straight into the next handler. No `while (true)`, no central `switch`, no return to a parent frame.
+3. **There is no central dispatch loop.** V8 uses indirect *threaded dispatch*: each bytecode handler ends with a tail call that jumps straight into the next handler. No `while (true)`, no central `switch`, no return to a parent frame. The interpreter still iterates — it keeps fetching and dispatching opcodes, which is what interpreting *is* — but that iteration is spread across the handlers rather than driven from one place.
 4. **The handlers were compiled when Chrome was built.** Each opcode's handler is written in CodeStubAssembler/Torque and compiled to native code at build time, then embedded in the browser binary as a builtin.
 5. **Tier-up runs on a budget, not a call count.** Each function carries an interrupt budget scaled to its bytecode length. It is charged at function entry *and at loop back-edges*, and when it hits zero V8 makes a tiering decision.
 
@@ -138,7 +139,7 @@ Four CPU registers stay permanently dedicated while Ignition is executing:
 | accumulator | the implicit operand that `Ldar` / `MulSmi` read and write |
 | frame pointer | base of this frame — `r0` and `a0` are offsets from it |
 
-### There is no loop
+### There is no central dispatch loop
 
 Every handler's last few instructions look like this:
 
@@ -149,6 +150,8 @@ jmp    rax                    ; go there — and never come back
 ```
 
 No `call`, no `ret`, no central `switch`, no `while (true)`. Control falls sideways from handler to handler. This is *indirect threaded dispatch*, and the reason for it is branch prediction: a single central dispatch branch would mispredict on essentially every bytecode, whereas each handler's own dispatch site gets its own prediction history. It costs roughly 10–15 cycles per bytecode, which is the number Sparkplug exists to delete.
+
+Be precise about what is missing, though: the *fetch-and-dispatch iteration* is still happening on every bytecode — those three instructions above are it. What threaded dispatch removes is the single shared dispatcher that a `while`-plus-`switch` interpreter routes every opcode through. "There is no interpreter loop at all" overstates it and is easy for an interviewer to pick apart; "there is no central switch-based dispatch loop" is the claim that holds. V8's RegExp interpreter makes the contrast concrete — it was switched *from* switch-based *to* threaded dispatch for exactly this reason, and that post notes Ignition already used the threaded approach.
 
 Because the dispatch is a tail call, the handler chain does not grow the stack — the dispatch calling convention pins its parameters in fixed machine registers so they thread through without touching memory.
 
@@ -262,7 +265,7 @@ Lazy compilation is a **design decision**, not a property of compilers or interp
 
 Short answer:
 
-> Bytecode doesn't run — native code runs, and the bytecode selects which native code runs next. V8 keeps a dispatch table of ~256 bytecode handlers that were compiled into the Chrome binary at build time, and each handler ends by tail-jumping straight into the next one, so there's no interpreter loop at all. Handlers also write type feedback as a side effect of doing their arithmetic. Each function carries an interrupt budget scaled to its bytecode size, charged on function entry and on loop back-edges; when it runs out, V8 decides whether to compile the function with Sparkplug, Maglev, or TurboFan.
+> Bytecode doesn't run — native code runs, and the bytecode selects which native code runs next. V8 keeps a dispatch table of ~256 bytecode handlers that were compiled into the Chrome binary at build time, and each handler ends by tail-jumping straight into the next one, so there's no central switch-based dispatch loop — the fetch-and-dispatch step lives at the end of every handler instead. Handlers also write type feedback as a side effect of doing their arithmetic. Each function carries an interrupt budget scaled to its bytecode size, charged on function entry and on loop back-edges; when it runs out, V8 decides whether to compile the function with Sparkplug, Maglev, or TurboFan.
 
 Deeper answer:
 
@@ -271,7 +274,7 @@ Deeper answer:
 ## 9. Practice
 
 1. <details><summary>Why does `console.log("hi"); const x = ;` print nothing, and what does that prove?</summary>The whole script is parsed to completion before any statement executes, so the syntax error on line 2 is discovered before line 1 ever runs. It proves execution is not line-by-line: a line-at-a-time interpreter would have printed "hi" first. The grain of truth in the myth is that compilation is deferred per function, not per line.</details>
-2. <details><summary>A colleague says "the interpreter loops over the bytecode array, switching on each opcode." Correct them precisely.</summary>There is no loop and no switch. V8 uses indirect threaded dispatch: each handler ends with a tail call that reads the next opcode byte, indexes the dispatch table to get that opcode's handler address, and jumps to it. Control falls sideways from handler to handler and never returns to a parent. The motivation is branch prediction — one central dispatch branch would mispredict on nearly every bytecode, so each handler gets its own dispatch site with its own prediction history.</details>
+2. <details><summary>A colleague says "the interpreter loops over the bytecode array, switching on each opcode." Correct them precisely — and don't overcorrect.</summary>The <em>switch</em> is wrong; the iteration is not. V8 uses indirect threaded dispatch: each handler ends with a tail call that reads the next opcode byte, indexes the dispatch table for that opcode's handler address, and jumps to it. Control falls sideways from handler to handler and never returns to a parent, so there is no central dispatcher — but fetch-and-dispatch still happens once per bytecode, at the tail of each handler. The motivation is branch prediction: one shared dispatch branch would mispredict on nearly every bytecode, whereas each handler's own dispatch site keeps its own prediction history. Saying "there is no loop at all" trades one wrong answer for another.</details>
 3. <details><summary>A function is called exactly once. Can it reach TurboFan? Explain the mechanism, not just yes or no.</summary>Yes, if it contains a hot loop. Tier-up is driven by an interrupt budget charged at function entry and at every loop back-edge (the JumpLoop bytecode), not by an invocation counter alone. A single call running a million iterations exhausts the budget through back-edges. If the loop is still executing when compilation finishes, V8 performs on-stack replacement: it compiles a version entered at the loop header, migrates live values from the interpreter frame into the new frame, and jumps into machine code without the function returning first.</details>
 4. <details><summary>Transfer question: your Next.js SSR pods show a p95 latency spike for about a minute after every deploy, then recover. Nothing in the code changed. What is happening, and what is one mitigation?</summary>JIT state lives in the process and dies with every restart. A fresh Node process starts executing render-path functions in Ignition with no feedback vectors allocated, and they only tier up through Sparkplug, Maglev, and TurboFan as feedback accumulates under real traffic. Mitigation: warm the hottest routes with synthetic requests in a deploy hook before the instance joins the load balancer, so tier-up is paid for by warmup traffic rather than real users.</details>
 5. <details><summary>Why is bytecode, rather than the AST, described as the source of truth?</summary>The AST is freed as soon as the BytecodeGenerator has emitted bytecode. Every optimizing tier compiles from bytecode, and deoptimization reconstructs an interpreter frame and resumes in bytecode. Machine code is therefore a disposable cache on top of bytecode. The one caveat is that bytecode itself can be flushed when a function goes cold and regenerated from the retained source text, which is the only thing that persists indefinitely.</details>

@@ -2357,7 +2357,7 @@ Related notes: [[32 - Compilation and Machine Foundations/12 - Compiled vs Inter
 
 **Technical Meaning:** Stage 3: walk the AST building symbol tables per scope, bind each identifier use to its declaration, and check types. It reports the errors syntax cannot — unresolved names and type mismatches. `tsc` is essentially this stage plus a code generator that erases annotations.
 
-**Why It Matters:** It is where JavaScript's scope behaviour is *decided*: bindings are created on scope entry, so **TDZ and hoisting are semantic-analysis artefacts rather than runtime magic**. It also bounds what TypeScript can know — everything it knows, it knows here, and none of it survives into the running program.
+**Why It Matters:** It settles the *shape* of scope — which declarations exist where, and which programs are invalid outright (early errors like a duplicate `let`). Note the boundary carefully: **TDZ is not a static artefact.** At runtime, scope entry creates lexical bindings uninitialized, they initialize when evaluation reaches the declaration, and reading one first throws a `ReferenceError`. Static semantics say which bindings exist; evaluation decides whether you touched one too early. This stage also bounds what TypeScript can know — everything it knows, it knows here, and none of it survives into the running program.
 
 Related notes: [[32 - Compilation and Machine Foundations/12 - Compiled vs Interpreted and Every Stage Between|Compiled vs Interpreted, and Every Stage Between]], [[03 - Scope and Variables/04 - Hoisting and TDZ|Hoisting and TDZ]]
 

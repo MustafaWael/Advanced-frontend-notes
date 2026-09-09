@@ -43,4 +43,4 @@ This module teaches the machine model behind every JavaScript line you write: wh
 - [ ] I can name the TC39 stages and explain what WinterTC standardizes across server runtimes.
 - [ ] I can explain structured clone limits, transfer vs copy for large buffers, and why `Atomics.wait` is banned on the main thread.
 - [ ] I can answer "what happens when JavaScript runs code?" in two minutes using stack, heap, jobs, tasks, and host APIs.
-- [ ] (deep-dive) I can explain that there is no interpreter loop, that bytecode handlers ship pre-compiled in the browser binary, and that tier-up runs on a bytecode-size-scaled budget charged by function entries and loop back-edges.
+- [ ] (deep-dive) I can explain that there is no *central switch-based* dispatch loop — the fetch-and-dispatch step sits at the tail of every handler — that bytecode handlers ship pre-compiled in the browser binary, and that tier-up runs on a bytecode-size-scaled budget charged by function entries and loop back-edges.

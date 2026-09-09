@@ -14,6 +14,17 @@ None of this is required to pass a mid-level frontend interview. It is here beca
 > [!tip] Start at note 12, whatever its number says
 > [[32 - Compilation and Machine Foundations/12 - Compiled vs Interpreted and Every Stage Between|Compiled vs Interpreted, and Every Stage Between]] is the front door: it dissolves the compiled-versus-interpreted question and walks all ten stages from characters to executing instructions once, end to end, routing to every other note for the detail. It carries a number in the teens only because this module appends rather than renumbers. If you read one note here, read that one.
 
+> [!warning] Implementation scope — read this before quoting anything here
+> This module names concrete engines on purpose, which makes it useful and makes it perishable. V8 internals, bytecode opcodes, tiering heuristics, thresholds, printed bytecode and generated assembly are **implementation details that change between versions and differ across engines** — treat them as explanatory models, never as API guarantees. When a claim matters, check which of three kinds it is:
+>
+> | Kind | Example | How long it stays true |
+> | --- | --- | --- |
+> | **Specification** | ECMAScript jobs; the HTML event loop's microtask checkpoints; Wasm's validation rules | Years; changes go through a standards process |
+> | **Named implementation** | "V8 13.x / Chrome M137 speculatively inlines `call_indirect` targets" | One or two release cycles — name the engine *and* the version |
+> | **Teaching model** | "an interpreter is a loop with a switch"; the ten-stage pipeline diagram | Deliberately simplified; correct as a mental model, wrong as a description of V8 |
+>
+> Every note here carries `Source Anchors`. If a claim you want to repeat is not traceable to one of them, treat it as a teaching model rather than a fact.
+
 > [!tip] Read the rest as a horizontal, not a ladder
 > The interview-facing modules are dependency-ordered — you need scope before closures. This one is not. After note 12, each note stands alone, and the honest reason to read any of them is "a word in the engine notes stopped feeling like an explanation."
 

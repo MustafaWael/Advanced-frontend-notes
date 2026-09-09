@@ -19,7 +19,7 @@ aliases: [call_indirect, WasmGC, Wasm Deopt, Speculative Inlining, Guard vs Deop
 ## Source Anchors
 
 - [WebAssembly Core Specification - Control Instructions (`call_indirect`)](https://webassembly.github.io/spec/core/syntax/instructions.html#control-instructions)
-- [V8 blog](https://v8.dev/blog) — the Wasm tiering and WasmGC posts
+- [V8 - Speculative optimizations for WebAssembly using deopts and inlining](https://v8.dev/blog/wasm-speculative-optimizations) — the primary source for everything in this note
 - [WebAssembly - GC proposal](https://github.com/WebAssembly/gc)
 - [MDN - WebAssembly.Table](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Table)
 
@@ -34,6 +34,19 @@ aliases: [call_indirect, WasmGC, Wasm Deopt, Speculative Inlining, Guard vs Deop
 | Knowable from the binary? | Yes — declared and validated at load | **No** — the table index is a runtime, data-dependent value |
 | Can an engine be wrong about it? | Never | Yes |
 | Needs guards or deopt? | Never, then or now | Yes, since Chrome M137 (2025) |
+
+### The panel: what Wasm's static types actually buy
+
+Keep this table; it is the antidote to the inference "Wasm is static, therefore nothing warms up." It is also the canonical version of this claim for the whole module — the other Wasm notes link here rather than restating it.
+
+| Genuinely settled before execution | Still dynamic in current V8 |
+| --- | --- |
+| Value types are declared and validated at load | Indirect-call targets are runtime data |
+| No JavaScript-style *type* profiling is needed | **Liftoff emits code to update a feedback vector at every call site** |
+| No deopt from a value-type mismatch — those are rejected at validation | Behaviour-based speculation can, and does, deopt |
+| Baseline compilation can start immediately, so the first run is fast | Optimized code still arrives on a hotness heuristic — tier-up has not gone away |
+
+So "Wasm has no feedback vector, no warm-up and no tier ladder" is wrong on all three counts as a general statement. What is true is narrower and still worth a lot: **no type uncertainty, therefore no type feedback, no inline caches, and a fast first run.**
 
 The claim "Wasm never deoptimizes because it is statically typed" fails on the *because*. Static typing genuinely removes the need for type speculation — that half is solid and always was. But Wasm's historical absence of deopt was a **design choice** in V8's pipeline: compile with Liftoff, then unconditionally tier up to TurboFan using guaranteed-correct static types, and never speculate about anything. An engine was always free to speculate about facts *outside* the type system, and from Chrome M137 it does.
 

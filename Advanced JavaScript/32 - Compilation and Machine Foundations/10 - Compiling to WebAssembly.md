@@ -20,6 +20,7 @@ aliases: [Wasm Pipeline, LLVM Wasm Backend, wasm32, Liftoff, wat2wasm, Wasm Bina
 
 - [WebAssembly Core Specification - Binary Format](https://webassembly.github.io/spec/core/binary/index.html)
 - [WebAssembly Core Specification - Validation](https://webassembly.github.io/spec/core/valid/index.html)
+- [V8 - Speculative optimizations for WebAssembly using deopts and inlining](https://v8.dev/blog/wasm-speculative-optimizations)
 - [V8 - Liftoff, a new baseline compiler for WebAssembly](https://v8.dev/blog/liftoff)
 - [LLVM - WebAssembly target (`llvm/lib/Target/WebAssembly`)](https://llvm.org/docs/index.html)
 - [MDN - Compiling from Rust to WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly/Guides/Rust_to_Wasm)
@@ -143,7 +144,7 @@ clang++ --target=wasm32 main.cpp
 
 V8 originally compiled Wasm with TurboFan only. TurboFan produces excellent code and is slow to compile, so a multi-megabyte module from a C++ game meant a long delay before *anything* could run. **Liftoff** fixed that: one pass over the bytecode, emit machine code directly, minimal analysis, no optimization — fast enough that it can often compile faster than the bytes stream in over the network. Execution starts almost immediately on naive-but-correct code, while TurboFan recompiles hot functions in the background and V8 swaps the optimized versions in.
 
-Same shape as the JavaScript ladder (Ignition → Sparkplug → Maglev → TurboFan) and for the same reason: get something running now, spend real compile time only on what turns out to matter. The difference is that Wasm's tiering needs no warm-up period to learn types — they are already in the binary.
+Same shape as the JavaScript ladder (Ignition → Sparkplug → Maglev → TurboFan) and for the same reason: get something running now, spend real compile time only on what turns out to matter. The difference is only about *types*: Wasm's tiering needs no warm-up period to learn them, because they are already in the binary. Everything else about tiering still applies — Liftoff's code is unoptimized, it emits feedback-vector updates at call sites, and a function reaches TurboFan on a hotness heuristic just like a JavaScript one.
 
 ## 2. Why It Matters
 

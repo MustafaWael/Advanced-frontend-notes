@@ -98,43 +98,88 @@ const value = 1;
 
 ### The TDZ is a real value, not a rule the engine remembers
 
-The spec describes an uninitialized binding. V8 implements that literally: it writes a special sentinel — *the hole* — into the binding's slot, and every read emits a check for it. You can see both the hoisting and the TDZ in the bytecode.
+The spec describes an uninitialized binding. V8 implements that literally: it writes a special sentinel — *the hole* — into the binding's slot, and reads that could hit an uninitialized binding emit a check for it. Both halves are visible in bytecode, and the clearest place to see them is a **block scope**, because there V8 emits the hole write explicitly.
 
 ```js
-const x = 1
-
-function a() {
-  return x + 1
+function outer() {
+  {
+    const k = 1
+    const f = () => k + 1   // captures k, so k lives in a context slot
+    return f()
+  }
 }
+```
 
-console.log(x + a())
+Captured output, V8 12.4 (`node --print-bytecode --print-bytecode-filter=outer`):
+
+```txt
+CreateBlockContext [0]         ; a fresh context for the block
+LdaTheHole
+StaCurrentContextSlot [2]      ; k ← the hole          ← THIS is the TDZ
+StaCurrentContextSlot [2]      ; k ← 1                 ← the `const k = 1` line
+CreateClosure [1], [0], #2     ; build f, which closes over that slot
+```
+
+`LdaTheHole` is the point: the TDZ is not a rule the engine consults, it is a sentinel physically sitting in the slot until the declaration executes. And the *check* has its own opcode. Read a lexical binding before its declaration and you get it:
+
+```js
+function g() {
+  try { return v } catch (e) { return e.constructor.name }
+  const v = 1
+}
+g() // "ReferenceError"
 ```
 
 ```txt
-LdaTheHole
-StaCurrentContextSlot [2]      ; x ← the hole      ← THIS is the TDZ
-CreateClosure [0], [0], #2     ; build function a
-StaGlobal [0], [0]             ; globalThis.a = closure   ← THIS is hoisting
-LdaSmi [1]
-StaCurrentContextSlot [2]      ; x ← 1             ← the `const x = 1` line
-LdaGlobal [1], [2]             ; console
-...
+LdaTheHole                     ; v ← the hole, on function entry
+Ldar r0                        ; read v
+ThrowReferenceErrorIfHole [0]  ; ← the TDZ error, as one instruction
 ```
 
-Read the first four instructions: `a` is created and stored **before** `x` receives its value. That is the whole of "function declarations are initialized early," with no metaphor. And `LdaTheHole` shows the TDZ is not a rule the engine consults — it is a sentinel physically sitting in the slot until the declaration executes.
+That is the whole mechanism: a sentinel written on scope entry, and a guarded read. `ThrowReferenceErrorIfHole` is why the TDZ costs a check rather than being free, and why V8 can drop that check once it can prove the binding is initialized at that point.
 
-Inside `a`, the read compiles to `LdaImmutableCurrentContextSlot [2]` — *immutable* because `x` is `const`, so the compiler proved no reassignment is possible and dropped the write barrier.
+Reading an initialized `const` from a context compiles to `LdaImmutableCurrentContextSlot` — *immutable* because `const` means no reassignment is possible, so no write barrier is needed.
 
 > [!warning] Top-level `let` and `const` are not on the global object
-> The two bindings in that snippet are stored in completely different places, which is why they get different instructions:
+> **In a classic script** — a browser `<script>`, or a string passed to `vm.runInThisContext` — the two bindings in that snippet are stored in completely different places, which is why they get different instructions:
 >
 > - `x` — a top-level `const` → a numbered slot in the **script context**, a heap object. `globalThis.x` is `undefined`.
-> - `a` — a function declaration → an actual **property of `globalThis`**, hence `StaGlobal`.
+> - `a` — a function declaration → an actual **property of `globalThis`**. In V8 12.4 the top-level bytecode installs it with `CallRuntime [DeclareGlobals]` at script entry, before the first statement runs — which is *exactly* what "function declarations are initialized early" means, with no metaphor.
 >
 > `var` behaves like `a` here, not like `x`. This is the mechanism behind the `var`/`let` difference people usually describe only as "`let` is block-scoped": at the top level of a script they don't merely differ in scope, they live in different objects. See [[03 - Scope and Variables/03 - var let const|var let const]].
+>
+> **This half is script-only, so mind the module system.** A `.js` file run by Node is a CommonJS module, whose top level is the body of a wrapper function — so `var` and function declarations become ordinary local bindings there and never touch `globalThis`. ES modules have their own module scope and behave the same way. Verified in Node:
+>
+> ```js
+> // node probe.js  (CommonJS)
+> const x = 1; function a() {}; var v = 2;
+> globalThis.a; // undefined      ← it's just a local in the CJS wrapper
+> globalThis.v; // undefined
+>
+> // the same source via require('vm').runInThisContext(...)  (classic script)
+> globalThis.a; // function       ← installed by the runtime at script entry
+> globalThis.v; // 2
+> globalThis.x; // undefined      ← const still goes to the script context
+> ```
+>
+> The TDZ half of the listing — `LdaTheHole` into a context slot — shows up in **all three**, because that is language-level. Only the global-object storage depends on being a script.
 
-> [!tip] Reproduce it
-> `node --print-bytecode --print-bytecode-filter='*' file.js` on the snippet above. The full dispatch machinery behind these instructions is in [[02 - JavaScript Runtime Foundations/09 - Bytecode Dispatch and Tier-Up|Bytecode Dispatch and Tier-Up]].
+> [!tip] Reproduce it — and match the environment to the claim
+> The two listings above were captured with `--print-bytecode-filter` on a named function, which works identically in Node, so they reproduce as shown. The `globalThis` behaviour below is **classic-script** only — to see that, evaluate the source as a script rather than as a module:
+>
+> ```sh
+> # script semantics — top level installs var/function decls via DeclareGlobals
+> node --print-bytecode -e "require('vm').runInThisContext(require('fs').readFileSync('snippet.js','utf8'))"
+>
+> # module semantics — no global installation at all; they stay local bindings
+> node --print-bytecode --print-bytecode-filter='*' snippet.js
+> ```
+>
+> One thing you will *not* find at the top level of a script is an explicit `LdaTheHole` for a top-level `const`: the script context's slots start out holding the hole without any bytecode saying so. That is why the examples above use a block and a function body — those are the scopes where V8 emits the write, so the mechanism is actually visible.
+>
+> Node compiles a lot of its own internals on startup, so filter the dump (`--print-bytecode-filter=<fnName>` on a distinctively-named function) or search it for `LdaTheHole` rather than reading it top to bottom.
+>
+> Treat any printed bytecode as **representative output, not a contract**: opcode names, operand encodings and register numbering all change between V8 versions and can differ by embedder. Read it for the mechanism — a hole written into a slot, a closure stored before the `const` initializes — not as a fixed sequence to memorize. The full dispatch machinery behind these instructions is in [[02 - JavaScript Runtime Foundations/09 - Bytecode Dispatch and Tier-Up|Bytecode Dispatch and Tier-Up]].
 
 ## 5. Function Declaration vs Function Expression
 

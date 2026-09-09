@@ -72,7 +72,7 @@ This module is #deep-dive. Nothing here is required to pass a mid-level frontend
 - [ ] I can give the two independent reasons Java JITs despite full static typing, and keep them separate.
 - [ ] I can explain why Java's JIT speculation is a different problem from V8's, and not repeat "Java JITs because it's dynamic".
 - [ ] I can explain what GraalVM Native Image gains and gives up, and why that proves bytecode was a choice.
-- [ ] I can place Wasm on the axis: portable artifact, static types, single-pass compile, no warm-up.
+- [ ] I can place Wasm on the axis: portable artifact, static types, single-pass baseline compile, no *type*-feedback warm-up — while still profiling call targets and tiering up.
 - [ ] I can name the frontend's AOT levers — bundling, prerendering, compile-time reactivity, code caching — and the failure mode they share.
 - [ ] I can ask the phase question about any optimization: is this input knowable at build time, for every future consumer?
 
@@ -130,6 +130,7 @@ This module is #deep-dive. Nothing here is required to pass a mid-level frontend
 - [ ] I can explain why Liftoff exists and what problem TurboFan-only compilation caused.
 - [ ] I can separate the three Wasm load costs — download, compile, run — and name the distinct fix for each.
 - [ ] I can state the two independent facts hidden inside "Wasm never deopts because it's statically typed."
+- [ ] I can say what Liftoff still collects and why, and correct "Wasm has no feedback vector and no tier ladder."
 - [ ] I can explain why `call_indirect`'s target is not derivable from the binary, and what speculative inlining does with that.
 - [ ] I can explain why a wrong speculation is a *correctness* problem rather than a performance one.
 - [ ] I can distinguish a guard branch from a true deoptimization and say when each suffices.

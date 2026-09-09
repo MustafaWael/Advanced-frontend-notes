@@ -22,7 +22,9 @@ status: not-started
 - [MDN: The structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)
 - [MDN Atomics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics)
 - [TC39 ShadowRealm proposal](https://github.com/tc39/proposal-shadowrealm)
-- [V8 API reference: MicrotaskQueue](https://v8.github.io/api/head/classv8_1_1MicrotaskQueue.html)
+- [ECMAScript: Jobs and host operations to enqueue jobs](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-jobs)
+- [HTML Living Standard: event loops and microtask checkpoints](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops)
+- [V8 API reference: MicrotaskQueue (implementation, not the spec model)](https://v8.github.io/api/head/classv8_1_1MicrotaskQueue.html)
 - [Node.js: The event loop, timers, and process.nextTick()](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick)
 - [MDN: MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)
 
@@ -220,17 +222,22 @@ The `.then` callback is not called synchronously. It is scheduled as a promise r
 
 This is the question that decides whether your mental model of async JavaScript is a diagram or a mechanism, and the answer is a split:
 
-| Piece | Owned by | Consequence |
-| --- | --- | --- |
-| The job (microtask) queue | The **engine** — jobs are ECMAScript, so V8 must implement them regardless of host | Microtask ordering is identical in Chrome, Node, Deno and Bun. It is language-level, not runtime-level |
-| The event loop, task queues, timers | The **host** — HTML Living Standard in browsers, libuv in Node | Task ordering, phases and `setTimeout` clamping differ per host |
+Read it as two layers, and keep the **specification** model separate from any **engine's implementation** of it — conflating them is where most confident-but-wrong answers about this come from.
 
-So how does a host enqueue into a queue the engine owns? Not by reaching into internals — **the engine exposes an embedder API for exactly this.** V8's `v8::MicrotaskQueue::EnqueueMicrotask` and `v8::Isolate::EnqueueMicrotask` exist so that Blink and Node's bindings layer can schedule microtasks, and V8's `MicrotasksPolicy` lets the embedder choose who triggers the drain — with the explicit policy, the host calls `PerformMicrotaskCheckpoint()` itself at the point in its loop where the spec says a microtask checkpoint belongs. That is the whole integration: the engine owns the queue and the draining semantics, the host owns *when* the checkpoint happens.
+| Layer | What it defines | Where it lives |
+| --- | --- | --- |
+| **Specification** | ECMAScript defines *jobs* (promise reactions) and hands scheduling to the host through hooks such as `HostEnqueuePromiseJob`. The **HTML Living Standard** defines the event loop, and in browsers the microtask queue is part of that event loop, along with when microtask checkpoints run | ECMA-262 + HTML |
+| **Implementation** | V8 provides a `MicrotaskQueue` and an embedder API (`v8::Isolate::EnqueueMicrotask`, `MicrotaskQueue::EnqueueMicrotask`, `MicrotasksPolicy`, `PerformMicrotaskCheckpoint()`) that an embedder such as Blink or Node *may* use to realize that model | V8, per embedder |
+
+So the accurate ownership statement is: **promise reactions are ECMAScript jobs, scheduled through host hooks; in a browser the HTML event loop owns the microtask queue and decides when checkpoints happen.** V8's `MicrotaskQueue` is one engine's machinery for implementing that, exposed to embedders — it is not the cross-platform rule, and a different engine (JavaScriptCore in Bun, SpiderMonkey in Firefox) satisfies the same spec with its own.
+
+> [!warning] Don't over-claim cross-host uniformity
+> What the language guarantees is the ordering *among* promise jobs: reactions run in the order they were enqueued, and a checkpoint drains the queue completely, including jobs enqueued during the drain. What is **not** guaranteed to be identical across hosts is where those checkpoints sit relative to host work — Node drains `process.nextTick` first and re-drains between libuv phases, browsers run a checkpoint after each task and before rendering. So "microtask ordering is the same in Chrome, Node, Deno and Bun" is true of the promise-to-promise ordering and false as a statement about observable interleaving with timers, I/O and paint. Say the narrow version.
 
 Two facts fall out of this that are worth having ready:
 
-- **`queueMicrotask()` is a host-provided function into an engine-owned queue.** It is defined by the HTML spec on `Window`/`WorkerGlobalScope`, not by ECMAScript — but it routes to the same queue promise reactions use, which is why it interleaves with `.then` in registration order rather than forming a second queue.
-- **`process.nextTick()` is not on V8's microtask queue at all.** It is a separate list that Node manages itself, drained *before* the V8 microtask queue on every checkpoint. So Node has three levels, not two: nextTick queue → V8 microtask queue → libuv phases. See [[09 - Event Loop Advanced/09 - Node.js Event Loop vs Browser|Node.js Event Loop vs Browser]].
+- **`queueMicrotask()` is a host API, not an ECMAScript one.** It is defined by the HTML spec on `Window`/`WorkerGlobalScope` and queues onto the *same* microtask queue promise reactions use — which is why it interleaves with `.then` in registration order rather than forming a second queue.
+- **`process.nextTick()` is Node-specific scheduling, outside both specs.** It is a separate list Node manages itself, drained *before* the microtask queue at every checkpoint. So Node has three levels, not two: nextTick queue → microtask queue → libuv phases. Nothing in ECMAScript or HTML describes it, which is exactly why it has no browser counterpart. See [[09 - Event Loop Advanced/09 - Node.js Event Loop vs Browser|Node.js Event Loop vs Browser]].
 
 > [!warning] "ECMAScript features are microtasks, host APIs are tasks" has a standing exception
 > `MutationObserver` is defined by the DOM spec — unambiguously a host API — and is explicitly specified to deliver its records at a microtask checkpoint, so it runs before the next task and before the next paint. The rule that actually holds is: a microtask is whatever a spec says runs at the microtask checkpoint. Usually that is the language's own deferred work; `MutationObserver` is the common counterexample an interviewer can use to test whether you memorized a slogan.

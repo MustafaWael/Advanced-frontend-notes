@@ -77,7 +77,7 @@ This table is the note. Read it first as a map, and on any re-read use it instea
 | --- | --- | --- | --- | --- |
 | 1 | Lexer | characters → tokens | illegal character, unterminated string | every parser's first pass; ASI lives at its boundary with 2 |
 | 2 | Parser | tokens → AST | **syntax errors**, and only these | Babel/SWC parse, Prettier (parse then re-print) |
-| 3 | Semantic analysis | AST → symbol tables, types | **type errors**, unresolved names | **`tsc`** — this stage plus erasure, and nothing after |
+| 3 | Semantic analysis | AST → symbol tables, types | **type errors**, unresolved names, early errors | **`tsc`** — this stage plus erasure, and nothing after |
 | 4 | IR generation | AST → SSA or bytecode | — | V8's BytecodeGenerator; LLVM IR from rustc |
 | 5 | Optimization | IR → better IR | — | TurboFan's passes; `wasm-opt`; a minifier's transforms |
 | 6 | Code generation | IR → assembly / object code | — | minifiers (this is where names die), Sparkplug, Liftoff |
@@ -123,7 +123,7 @@ Errors here are **syntax errors**, and they are the only errors a parser can rep
 
 AST in, **annotated AST plus symbol tables** out. This stage answers questions syntax cannot: does this name refer to anything, and do the types line up?
 
-- **Binding / scope resolution.** Walk the tree building a symbol table per scope, and attach each identifier use to its declaration. This is where JavaScript's `var`/`let` behaviour is *decided* — bindings are created when a scope is entered, which is why a `let` binding exists but is uninitialized before its declaration. **TDZ and hoisting are semantic-analysis artefacts, not runtime magic** ([[03 - Scope and Variables/04 - Hoisting and TDZ|Hoisting and TDZ]]).
+- **Binding / scope resolution.** Walk the tree building a symbol table per scope, and attach each identifier use to its declaration. Static semantics settle *which* declarations exist in which scope and which programs are outright invalid (an early error such as a duplicate `let`). What they do **not** do is execute anything: at runtime, entering a scope creates its lexical bindings **uninitialized**, they become initialized when evaluation reaches the declaration, and reading one before that throws the TDZ `ReferenceError` — V8 implements it with a sentinel value checked on access. So the *shape* of scope is static and the *initialization and the error* are runtime ([[03 - Scope and Variables/04 - Hoisting and TDZ|Hoisting and TDZ]] traces the runtime mechanism).
 - **Type checking.** Compare declared and inferred types; report mismatches. Errors here are **type errors** — a different class from syntax errors, reported by a different stage, which is why `tsc` can pass on code that is syntactically fine and semantically wrong in a way it wasn't asked about.
 
 > [!tip] This is exactly what `tsc` is, and exactly what it is not
