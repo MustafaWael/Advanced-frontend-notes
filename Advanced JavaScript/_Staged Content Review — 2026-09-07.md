@@ -1,11 +1,14 @@
 ---
 tags: [vault-operations, review, curriculum, v8, webassembly]
-status: action-required
+review_status: resolved
+resolved_on: 2026-09-08
 reviewed_on: 2026-09-07
 scope: staged changes, new Module 32, related runtime notes, Lab 07, and review notes
 ---
 
 # Staged Content Review — 2026-09-07
+
+> [!tip] Status: **RESOLVED — 2026-09-08.** The two P1 items (Wasm feedback/tier-up language, TDZ as runtime semantics) and the four P2 items (inline-cache guards, threaded dispatch, microtask ownership, the Node/browser environment mismatch) were corrected and committed. The findings below are preserved as the historical review record. Frontmatter uses `review_status` rather than `status` so this note stays out of the study views and the `status` vocabulary.
 
 ## Purpose
 
