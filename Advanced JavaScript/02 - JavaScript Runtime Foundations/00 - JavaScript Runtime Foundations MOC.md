@@ -1,8 +1,11 @@
 ---
-tags: [javascript, moc, runtime]
-module: "02 - JavaScript Runtime Foundations"
+tags:
+  - javascript
+  - moc
+  - runtime
+module: 02 - JavaScript Runtime Foundations
 priority: must-know
-status: not-started
+status: solid
 ---
 
 # JavaScript Runtime Foundations MOC

@@ -1,10 +1,13 @@
 ---
-tags: [javascript, runtime, javascript-engine-and-runtime]
-module: "02 - JavaScript Runtime Foundations"
+tags:
+  - javascript
+  - runtime
+  - javascript-engine-and-runtime
+module: 02 - JavaScript Runtime Foundations
 priority: must-know
-status: not-started
+status: learning
 verified_on: 2026-07-24
-version_scope: "V8 13.x era (Ignition/Sparkplug/Maglev/TurboFan+Turboshaft); Wasm deopt since Chrome M137"
+version_scope: V8 13.x era (Ignition/Sparkplug/Maglev/TurboFan+Turboshaft); Wasm deopt since Chrome M137
 ---
 # JavaScript Engine and Runtime
 

@@ -25,9 +25,7 @@ views:
       - module
       - priority
     sort:
-      - property: module
-        direction: ASC
-      - property: file.name
+      - property: priority
         direction: ASC
   - type: table
     name: Study Queue
