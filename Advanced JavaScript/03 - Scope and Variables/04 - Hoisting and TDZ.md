@@ -96,6 +96,46 @@ try {
 const value = 1;
 ```
 
+### The TDZ is a real value, not a rule the engine remembers
+
+The spec describes an uninitialized binding. V8 implements that literally: it writes a special sentinel — *the hole* — into the binding's slot, and every read emits a check for it. You can see both the hoisting and the TDZ in the bytecode.
+
+```js
+const x = 1
+
+function a() {
+  return x + 1
+}
+
+console.log(x + a())
+```
+
+```txt
+LdaTheHole
+StaCurrentContextSlot [2]      ; x ← the hole      ← THIS is the TDZ
+CreateClosure [0], [0], #2     ; build function a
+StaGlobal [0], [0]             ; globalThis.a = closure   ← THIS is hoisting
+LdaSmi [1]
+StaCurrentContextSlot [2]      ; x ← 1             ← the `const x = 1` line
+LdaGlobal [1], [2]             ; console
+...
+```
+
+Read the first four instructions: `a` is created and stored **before** `x` receives its value. That is the whole of "function declarations are initialized early," with no metaphor. And `LdaTheHole` shows the TDZ is not a rule the engine consults — it is a sentinel physically sitting in the slot until the declaration executes.
+
+Inside `a`, the read compiles to `LdaImmutableCurrentContextSlot [2]` — *immutable* because `x` is `const`, so the compiler proved no reassignment is possible and dropped the write barrier.
+
+> [!warning] Top-level `let` and `const` are not on the global object
+> The two bindings in that snippet are stored in completely different places, which is why they get different instructions:
+>
+> - `x` — a top-level `const` → a numbered slot in the **script context**, a heap object. `globalThis.x` is `undefined`.
+> - `a` — a function declaration → an actual **property of `globalThis`**, hence `StaGlobal`.
+>
+> `var` behaves like `a` here, not like `x`. This is the mechanism behind the `var`/`let` difference people usually describe only as "`let` is block-scoped": at the top level of a script they don't merely differ in scope, they live in different objects. See [[03 - Scope and Variables/03 - var let const|var let const]].
+
+> [!tip] Reproduce it
+> `node --print-bytecode --print-bytecode-filter='*' file.js` on the snippet above. The full dispatch machinery behind these instructions is in [[02 - JavaScript Runtime Foundations/09 - Bytecode Dispatch and Tier-Up|Bytecode Dispatch and Tier-Up]].
+
 ## 5. Function Declaration vs Function Expression
 
 Function declarations are initialized before execution:
@@ -461,4 +501,5 @@ let gtag = loadGtagStub(); // now the typeof above is a TDZ read -> ReferenceErr
 - [[10 - Modules/06 - Circular Dependencies|Circular Dependencies]]
 - [[10 - Modules/05 - Live Bindings|Live Bindings]]
 - [[16 - Code Output Questions/01 - Scope and Hoisting Output Questions|Scope and Hoisting Output Questions]]
+- [[02 - JavaScript Runtime Foundations/09 - Bytecode Dispatch and Tier-Up|Bytecode Dispatch and Tier-Up]] — where `LdaTheHole` and script contexts come from.
 - [[01 - Roadmap|Roadmap]]

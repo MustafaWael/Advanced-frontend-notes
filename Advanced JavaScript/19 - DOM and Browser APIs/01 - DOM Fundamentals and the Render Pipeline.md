@@ -37,6 +37,22 @@ The DOM is a live, in-memory tree of node objects that the browser builds from H
 
 JavaScript sits before this pipeline: it mutates the DOM/CSSOM, and the browser later runs the affected pipeline stages during the rendering step of the event loop.
 
+### Your JavaScript never becomes the styling
+
+Worth being precise about, because it removes the last bit of magic from "how does JS change the page":
+
+```js
+el.style.marginLeft = '10px';
+```
+
+1. That assignment compiles to a `StaNamedProperty` bytecode like any other property write ([[02 - JavaScript Runtime Foundations/09 - Bytecode Dispatch and Tier-Up|Bytecode Dispatch and Tier-Up]]).
+2. `style` is not a plain object. Looking `marginLeft` up on its hidden class finds not a data field but an **accessor** — a struct holding a raw C++ function pointer.
+3. That pointer targets Blink code generated from `CSSStyleDeclaration.idl` **at Chrome build time** and compiled by Clang, months before you typed the line. V8 sets up registers per the platform calling convention and issues an ordinary `call`.
+4. The C++ parses `"10px"` into a `CSSPrimitiveValue`, stores it in the element's inline style, and sets a dirty bit. Everything after that is stages 3–6 above, all in C++.
+
+> [!tip] The JS→browser boundary is not a special mechanism
+> It is an ordinary function call across a code-generated glue layer. The same is true of every DOM API, `fetch`, and `console.log`. This is also why `MutationObserver` isn't "watching" anything: inside the C++ function that removes a child node there is a literal branch — *if this document has observers registered, append a record to their queue*. The bookkeeping is hand-written into the mutation code. Nothing observes; things announce. See [[19 - DOM and Browser APIs/06 - Observers|Observers]].
+
 ## 2. Why It Matters
 
 - Almost every frontend performance problem that isn't network-related lives in this pipeline.

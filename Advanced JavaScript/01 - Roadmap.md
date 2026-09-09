@@ -108,6 +108,8 @@ graph TD
     Y --> AA
     Y --> AB[31 Low Level Design]
     Z --> AB
+    A --> AC[32 Compilation and Machine Foundations]
+    W --> AC
 ```
 
 ## Why This Order Matters
@@ -155,6 +157,7 @@ If a later topic feels slippery, the answer is usually not "read harder." It is 
 | 21b | [[29 - Frontend System Design/01 - The Frontend System Design Framework\|Frontend System Design]] | #must-know | Run RADIO on any "design X" prompt: requirements, architecture, data model, component + network APIs, ranked optimizations — with tradeoffs, in 35 minutes. | Frameworks + Scenarios + Network + a11y |
 | 21c | [[30 - Backend System Design/00 - Backend System Design MOC\|Backend System Design]] | #important | Only if your loop has a general/backend system-design round. Networking, API design, data modeling, caching, sharding & consistent hashing, CAP/PACELC, quorum, indexing, the seven access patterns — each tied to its frontend mirror. | Frontend System Design + Frameworks |
 | 21d | [[31 - Low Level Design/00 - Low Level Design MOC\|Low Level Design]] | #important | Only if your loop has an OOP/LLD/machine-coding round. SOLID, OOP, design patterns, and concurrency foundations in TypeScript — each with its frontend mirror. | Frameworks + TypeScript |
+| 21e | [[32 - Compilation and Machine Foundations/12 - Compiled vs Interpreted and Every Stage Between\|Compilation and Machine Foundations]] | #deep-dive | Off the interview path — but note 12 ("is JavaScript compiled or interpreted?", all ten stages, bundler-as-linker) is the one part that does come up in interviews. Then the machine layer under module 02: bytecode to machine code, stack vs register encodings, LLVM, AOT vs JIT, reflection vs compile-time codegen, the CPU and the memory hierarchy. Read for curiosity and for the build-time-vs-runtime intuition it transfers — never instead of the modules above. Its build companion is [[90 - Labs/07 - Bytecode VM Lab\|Lab 07]] (6-10 hours, also off-path). | Runtime Foundations + How the Web Works |
 | 22 | [[16 - Code Output Questions/01 - Scope and Hoisting Output Questions\|Code Output Questions]] | #must-know | Trace execution before touching the keyboard. | Continuous |
 | 23 | [[17 - Practical Frontend Scenarios/01 - Fixing Stale Closure in React\|Practical Frontend Scenarios]] | #must-know | Solve real UI bugs with production-ready patterns and tradeoffs. | Continuous |
 | 24 | [[90 - Labs/00 - Labs MOC\|Labs]] | #important | Build the mechanisms: profiler, typed boundary, accessible search, cached mutation — with tests and a11y passes. | Modules 22–25 as per lab |

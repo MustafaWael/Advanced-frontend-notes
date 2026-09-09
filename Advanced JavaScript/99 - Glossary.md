@@ -2104,3 +2104,289 @@ Related note: [[29 - Frontend System Design/14 - Accessibility in System Design|
 **Why It Matters:** The difference between a modal that traps focus correctly and one keyboard users can tab out of.
 
 Related note: [[29 - Frontend System Design/15 - Designing a Modal and Dialog System|Designing a Modal and Dialog System]]
+
+## Terms from Module 32 (Compilation and Machine Foundations)
+
+These are #deep-dive terms. None are required for a mid-level loop; they exist so that the engine notes' vocabulary bottoms out somewhere real. Module: [[32 - Compilation and Machine Foundations/00 - Compilation and Machine Foundations MOC|Compilation and Machine Foundations MOC]].
+
+### Bytecode
+
+**Plain English:** Instructions for a made-up computer.
+
+**Technical Meaning:** A compact instruction encoding for a *virtual* machine — Ignition bytecode, Wasm binary, JVM bytecode. No physical CPU decodes it; a software interpreter or a compiler must execute or lower it first. Portable across CPU architectures precisely because it is not machine code.
+
+**Why It Matters:** "JavaScript is interpreted" and "JavaScript is compiled" are both wrong because both skip this layer. In V8, bytecode is also where dynamism is recorded — each generic opcode carries a feedback-vector slot.
+
+Related notes: [[32 - Compilation and Machine Foundations/01 - From Source Text to Silicon|From Source Text to Silicon]], [[02 - JavaScript Runtime Foundations/09 - Bytecode Dispatch and Tier-Up|Bytecode Dispatch and Tier-Up]]
+
+### Machine Code
+
+**Plain English:** The only thing a CPU actually runs.
+
+**Technical Meaning:** Binary instructions in one CPU family's instruction set (x86-64, ARM64). The bits *are* the control signals — the hardware neither interprets nor translates, so machine code is not portable across architectures.
+
+**Why It Matters:** It is the end of every pipeline in this vault. "Compiled to machine code" is a specific claim about the last step, and most things called compilers (`tsc`, Babel, `javac`) never make it.
+
+Related note: [[32 - Compilation and Machine Foundations/01 - From Source Text to Silicon|From Source Text to Silicon]]
+
+### Assembly
+
+**Plain English:** Machine code spelled out for humans.
+
+**Technical Meaning:** A one-instruction-per-line textual notation for machine code. An assembler maps mnemonics to opcodes by table lookup — no analysis, no optimization. `mov eax, [rbp-4]` **is** the bytes `8B 45 FC`.
+
+**Why It Matters:** Assembly and machine code are one layer in two notations, not two layers. Treating them as different is the most common confusion in this area.
+
+Related note: [[32 - Compilation and Machine Foundations/01 - From Source Text to Silicon|From Source Text to Silicon]]
+
+### Hexadecimal
+
+**Plain English:** A short way to write bits.
+
+**Technical Meaning:** Base-16 notation. One hex digit is exactly 4 bits, two are exactly one byte, so hex is a lossless 4x-shorter rendering of binary. `8B` and `10001011` are the same byte.
+
+**Why It Matters:** Hex is a *notation*, never a layer. "Hex code" and "binary code" describe the same bytes in different fonts; nothing executes as hex.
+
+Related note: [[32 - Compilation and Machine Foundations/01 - From Source Text to Silicon|From Source Text to Silicon]]
+
+### Stack Machine
+
+**Plain English:** An instruction set where operands are implicit.
+
+**Technical Meaning:** An instruction encoding in which operations pop their inputs from an operand stack and push results, naming no registers. Chosen by Wasm, JVM bytecode and CPython for compact encoding, easy code generation (no register allocator needed) and single-pass validation.
+
+**Why It Matters:** It describes the *encoding*, never the hardware. Because compilers do register allocation, the stack is erased before execution — so "Wasm is stack-based" says nothing about compiled speed.
+
+**Not to be confused with:** a *stack*, which is just the LIFO data structure — a building block used all over the place, including inside register machines. A stack machine is an instruction-set design built around one; having a stack does not make something a stack machine. **V8's Ignition is not a stack machine**: V8 describes it as a register machine whose bytecodes name explicit register operands, with an accumulator layered on top. And the encoding is independent of execution strategy — an interpreted register machine's registers are memory slots, no closer to silicon than an operand stack.
+
+Related note: [[32 - Compilation and Machine Foundations/02 - Stack Register and Accumulator Bytecode|Stack, Register and Accumulator Bytecode]]
+
+### Accumulator
+
+**Plain English:** One register that instructions use without naming it.
+
+**Technical Meaning:** A designated register that serves as an implicit operand and destination, so instructions encode fewer slots. V8's Ignition is a hybrid: named registers for locals and parameters, plus an unnamed accumulator that most opcodes read and write (`Ldar a1`, then `Add a0, [0]`).
+
+**Why It Matters:** It explains why Ignition is called "hybrid" rather than register-based — the label describes instruction encoding, not hardware, since an accumulator physically *is* a register.
+
+Related note: [[32 - Compilation and Machine Foundations/02 - Stack Register and Accumulator Bytecode|Stack, Register and Accumulator Bytecode]]
+
+### Register Allocation
+
+**Plain English:** Deciding which values get to live inside the CPU.
+
+**Technical Meaning:** The compiler pass that maps an unbounded set of intermediate values onto a CPU's small fixed register file, spilling to stack memory under pressure. Performed by LLVM for AOT languages and by Sparkplug/Maglev/TurboFan for JavaScript.
+
+**Why It Matters:** It is the step that erases the stack-vs-register bytecode distinction, and the reason you have no control over registers in JavaScript — the JIT decides, and only in the compiled tiers.
+
+Related notes: [[32 - Compilation and Machine Foundations/07 - Registers Caches and RAM|Registers, Caches and RAM]], [[32 - Compilation and Machine Foundations/02 - Stack Register and Accumulator Bytecode|Stack, Register and Accumulator Bytecode]]
+
+### LLVM IR
+
+**Plain English:** A compiler's private instruction language.
+
+**Technical Meaning:** A typed, SSA, register-style intermediate representation that frontends (Clang, rustc, swiftc) lower into and backends lower out of, per target. It turns an N-languages-by-M-architectures problem into N plus M.
+
+**Why It Matters:** The difference from Wasm or JVM bytecode is lifetime, not shape: LLVM IR never ships and is discarded before the binary leaves the build machine, so it can only use static information — never observed execution.
+
+Related note: [[32 - Compilation and Machine Foundations/03 - LLVM and Compiler IR|LLVM and Compiler IR]]
+
+### AOT Compilation
+
+**Plain English:** Doing the CPU-specific work before shipping.
+
+**Technical Meaning:** Ahead-of-time compilation to native machine code on the build machine. Instant startup, no warm-up, no speculation — and an artifact tied to one architecture. C++, Rust, Go, GraalVM Native Image.
+
+**Why It Matters:** It is the other end of the axis from JIT, and the frontend has its own version: bundling, prerendering and compile-time reactivity all move work to build time, and fail the same way when the input was only knowable per request.
+
+Related note: [[32 - Compilation and Machine Foundations/04 - AOT JIT and the Portability Tradeoff|AOT, JIT and the Portability Tradeoff]]
+
+### Reflection
+
+**Plain English:** A program inspecting itself while it runs.
+
+**Technical Meaning:** Runtime introspection and manipulation of a program's own structure — enumerate fields, invoke a method named by a string, read or write a private field. Central to Java frameworks; deliberately absent from Rust, which uses compile-time derive macros instead.
+
+**Why It Matters:** Its three costs are the point: slower calls, lost compile-time safety, and broken closed-world analysis — the same reason a bundler tree-shakes a component only reached through a string key.
+
+Related notes: [[32 - Compilation and Machine Foundations/05 - Reflection and Compile-Time Codegen|Reflection and Compile-Time Codegen]], [[12 - Advanced Language Concepts/15 - Proxy and Reflect|Proxy and Reflect]]
+
+### Cache Line
+
+**Plain English:** The chunk of memory a cache moves at once.
+
+**Technical Meaning:** The unit of transfer between cache levels, typically 64 bytes. Reading one byte fetches its whole line, so sequential access is nearly free after the first miss while scattered access misses repeatedly.
+
+**Why It Matters:** It is the mechanism behind advice usually given as folklore — packed element kinds, typed arrays, stable object shapes — and the reason a memory-bound loop is not fixed by a better algorithm or a Wasm rewrite.
+
+Related notes: [[32 - Compilation and Machine Foundations/07 - Registers Caches and RAM|Registers, Caches and RAM]], [[07 - Arrays and Iteration/01 - Array Internals|Array Internals]]
+
+### Memory-Mapped I/O (MMIO)
+
+**Plain English:** Talking to a device by writing to an address.
+
+**Technical Meaning:** Address ranges routed by the chipset to a device's control registers rather than to RAM, so the CPU reaches a GPU or network card with ordinary load/store instructions. A driver is the software that knows each chip's register protocol.
+
+**Why It Matters:** It is why the CPU is an orchestrator rather than a container, and the substrate under every asynchronous host API in the event loop.
+
+Related note: [[32 - Compilation and Machine Foundations/06 - The CPU as Orchestrator|The CPU as Orchestrator]]
+
+### DMA (Direct Memory Access)
+
+**Plain English:** Letting a device do its own copying.
+
+**Technical Meaning:** The CPU hands a device an address and a length via MMIO; the device's controller reads or writes RAM itself and raises an interrupt when finished. The CPU sets up the transfer but does not move the bytes.
+
+**Why It Matters:** It is the hardware shape of `postMessage(buf, [buf])` — transfer ownership rather than copy — versus structured clone, which really does copy every byte on the calling thread.
+
+Related notes: [[32 - Compilation and Machine Foundations/06 - The CPU as Orchestrator|The CPU as Orchestrator]], [[19 - DOM and Browser APIs/09 - Web Workers and Offloading Work|Web Workers and Offloading Work]]
+
+### Interrupt
+
+**Plain English:** A device tapping the CPU on the shoulder.
+
+**Technical Meaning:** An electrical signal raised by a device when it needs attention. The CPU suspends the current instruction stream, runs an OS-installed handler, and resumes. The alternative, polling, burns cycles asking.
+
+**Why It Matters:** It is why the event loop has an I/O side at all — nothing calls back into your thread; the host is notified and enqueues a task.
+
+Related notes: [[32 - Compilation and Machine Foundations/06 - The CPU as Orchestrator|The CPU as Orchestrator]], [[09 - Event Loop Advanced/01 - Event Loop Overview|Event Loop Overview]]
+
+### Operand Stack
+
+**Plain English:** The scratch stack a bytecode VM computes on.
+
+**Technical Meaning:** An array the interpreter allocates — usually on the heap — holding the values the bytecode program pushes and pops. Entirely separate from the hardware call stack, which is a region of memory addressed by the CPU's stack-pointer register and holds the interpreter's own return addresses and spills.
+
+**Why It Matters:** VMs heap-allocate it deliberately, because heap data is resizable, inspectable by debuggers and GC, and **suspendable** — which is what makes a paused generator or an `await`ed async function implementable at all.
+
+Related notes: [[32 - Compilation and Machine Foundations/09 - Interpreters Dispatch and the Two Stacks|Interpreters, Dispatch and the Two Stacks]], [[12 - Advanced Language Concepts/08 - Iterators and Generators|Iterators and Generators]]
+
+### Dispatch Overhead
+
+**Plain English:** The cost of figuring out what to do next, paid on every instruction.
+
+**Technical Meaning:** The per-bytecode work an interpreter repeats forever — read the opcode, select the handler, load operands — independent of the operation itself. In V8 it runs roughly 10-15 cycles per bytecode, and it is what Sparkplug exists to delete by compiling bytecode straight to machine code.
+
+**Why It Matters:** It survives any amount of host-compiler optimization, because the host compiler optimizes the *interpreter* and never the *bytecode program* it runs. That gap is why a JIT has to be a separate piece of software, and why "rewrite the interpreter in a faster language" does not speed up interpreted programs.
+
+Related notes: [[32 - Compilation and Machine Foundations/09 - Interpreters Dispatch and the Two Stacks|Interpreters, Dispatch and the Two Stacks]], [[02 - JavaScript Runtime Foundations/09 - Bytecode Dispatch and Tier-Up|Bytecode Dispatch and Tier-Up]]
+
+### Liveness Analysis
+
+**Plain English:** Working out how long each value is still needed.
+
+**Technical Meaning:** The compiler pass that computes, for every value, the instruction range between its definition and its last use. It is the input to register allocation: a physical register can be reused the moment its previous occupant's live range ends.
+
+**Why It Matters:** It is why register-style IR is worth its extra complexity — the dataflow is written down, so "is this still needed?" is a lookup. On stack IR the compiler must first replay stack states to reconstruct it, which is why optimizing compilers convert stack bytecode to register or SSA form before doing real work.
+
+Related notes: [[32 - Compilation and Machine Foundations/02 - Stack Register and Accumulator Bytecode|Stack, Register and Accumulator Bytecode]], [[90 - Labs/07 - Bytecode VM Lab|Bytecode VM Lab]]
+
+### Register Spilling
+
+**Plain English:** Running out of registers and parking values in memory.
+
+**Technical Meaning:** When more values are live at once than there are physical registers, the allocator writes the excess to stack memory and reloads them at their next use. A modern CPU has roughly 16-32 general-purpose registers, so spilling is normal rather than exceptional in dense code.
+
+**Why It Matters:** It is the concrete meaning of "the CPU only has so many registers," and the reason register pressure is a real optimization concern — each spill is a memory round trip the value was supposed to avoid.
+
+Related notes: [[32 - Compilation and Machine Foundations/07 - Registers Caches and RAM|Registers, Caches and RAM]], [[32 - Compilation and Machine Foundations/02 - Stack Register and Accumulator Bytecode|Stack, Register and Accumulator Bytecode]]
+
+### call_indirect
+
+**Plain English:** WebAssembly's function pointer.
+
+**Technical Meaning:** A Wasm instruction that calls a function looked up by *index* in a function table. The engine reads the index (a runtime, data-dependent value), fetches the function at that table slot, checks its signature matches the declared type, and calls it. Compilers emit it for every virtual method call, trait object, function pointer and interface dispatch — you never write it by hand.
+
+**Why It Matters:** Wasm's type system guarantees the *signature* is compatible but not *which* compatible function is there, so the target is not derivable from the binary. That gap is what V8 speculates on since Chrome M137, and therefore the one place Wasm can now deoptimize.
+
+Related notes: [[32 - Compilation and Machine Foundations/11 - Wasm Speculation and Deopt|Wasm Speculation and Deopt]], [[32 - Compilation and Machine Foundations/10 - Compiling to WebAssembly|Compiling to WebAssembly]]
+
+### Liftoff
+
+**Plain English:** V8's fast-but-naive first compiler for WebAssembly.
+
+**Technical Meaning:** A single-pass baseline compiler that walks Wasm bytecode once and emits machine code directly, with no optimization — often compiling faster than the bytes stream in over the network. TurboFan then recompiles hot functions in the background and V8 swaps them in.
+
+**Why It Matters:** It exists because TurboFan-only compilation delayed startup on large modules until the whole thing was compiled. It is the Wasm analogue of Sparkplug, and the reason `WebAssembly.instantiateStreaming` can overlap compilation with download.
+
+Related notes: [[32 - Compilation and Machine Foundations/10 - Compiling to WebAssembly|Compiling to WebAssembly]], [[02 - JavaScript Runtime Foundations/02 - JavaScript Engine and Runtime|JavaScript Engine and Runtime]]
+
+### WasmGC
+
+**Plain English:** The WebAssembly feature that lets garbage-collected languages target it.
+
+**Technical Meaning:** Garbage-collected reference types (structs, arrays, typed references) added to Wasm, so a language with its own object model and GC — Kotlin, Dart, Java-family — can compile to Wasm without shipping its own collector in linear memory.
+
+**Why It Matters:** Those languages lean on virtual dispatch, so WasmGC output is dense with `call_indirect` through vtables — structurally polymorphic but usually monomorphic in practice, which is exactly the profile V8's speculative call-target inlining exploits. It is the reason Wasm deoptimization exists at all.
+
+Related note: [[32 - Compilation and Machine Foundations/11 - Wasm Speculation and Deopt|Wasm Speculation and Deopt]]
+
+### LLVM Backend
+
+**Plain English:** The half of a compiler that knows about one specific target.
+
+**Technical Meaning:** The target-specific half of LLVM, selected by the target triple (`x86_64-unknown-linux-gnu`, `wasm32-unknown-unknown`). It performs instruction selection, register allocation and encoding for that target. `rustc` and `clang` implement no code generation themselves; they lower to LLVM IR and let a backend finish the job, so switching targets changes only the backend.
+
+**Why It Matters:** The WebAssembly backend is the unusual one — its output is portable bytecode rather than machine code for physical hardware, which is precisely why a second compilation step (Liftoff/TurboFan, or Cranelift) is still needed on the user's machine.
+
+Related notes: [[32 - Compilation and Machine Foundations/03 - LLVM and Compiler IR|LLVM and Compiler IR]], [[32 - Compilation and Machine Foundations/10 - Compiling to WebAssembly|Compiling to WebAssembly]]
+
+### Lexer (Tokenizer / Scanner)
+
+**Plain English:** The stage that turns characters into words.
+
+**Technical Meaning:** Stage 1 of any language implementation: it reads source characters and emits **tokens** (keyword, identifier, number, punctuator), discarding whitespace and comments. Token structure is a *regular* language, so a lexer is a finite automaton with no memory of nesting, and it resolves ambiguity by longest match — `a---b` lexes as `a -- - b`.
+
+**Why It Matters:** It explains what a lexer cannot decide: nothing structural, so block-versus-object-literal is the parser's problem, not its. And JavaScript's automatic semicolon insertion sits exactly at its boundary with the parser, because the lexer records whether a line terminator preceded a token.
+
+Related note: [[32 - Compilation and Machine Foundations/12 - Compiled vs Interpreted and Every Stage Between|Compiled vs Interpreted, and Every Stage Between]]
+
+### Recursive Descent
+
+**Plain English:** Writing a parser as one function per grammar rule.
+
+**Technical Meaning:** A top-down parsing technique with a function per grammar production, choosing productions from a token or two of lookahead. Binary operators are handled by **precedence climbing** (Pratt parsing), which also sidesteps left recursion — a rule like `Expr → Expr '+' Term` would otherwise recurse forever. V8, Clang and rustc all hand-write recursive-descent parsers rather than using generators like yacc or ANTLR.
+
+**Why It Matters:** The reason production compilers hand-write parsers is error messages and error recovery, plus profileable speed and freedom to handle grammar quirks — which is why JavaScript's ambiguities (`(a, b)` before you see `=>`) are handled with spec-level *cover grammars* and targeted lookahead.
+
+Related notes: [[32 - Compilation and Machine Foundations/12 - Compiled vs Interpreted and Every Stage Between|Compiled vs Interpreted, and Every Stage Between]], [[90 - Labs/07 - Bytecode VM Lab|Bytecode VM Lab]]
+
+### Semantic Analysis
+
+**Plain English:** The stage that checks meaning, once the shape is known.
+
+**Technical Meaning:** Stage 3: walk the AST building symbol tables per scope, bind each identifier use to its declaration, and check types. It reports the errors syntax cannot — unresolved names and type mismatches. `tsc` is essentially this stage plus a code generator that erases annotations.
+
+**Why It Matters:** It is where JavaScript's scope behaviour is *decided*: bindings are created on scope entry, so **TDZ and hoisting are semantic-analysis artefacts rather than runtime magic**. It also bounds what TypeScript can know — everything it knows, it knows here, and none of it survives into the running program.
+
+Related notes: [[32 - Compilation and Machine Foundations/12 - Compiled vs Interpreted and Every Stage Between|Compiled vs Interpreted, and Every Stage Between]], [[03 - Scope and Variables/04 - Hoisting and TDZ|Hoisting and TDZ]]
+
+### Linker
+
+**Plain English:** The stage that stitches many compiled pieces into one artifact.
+
+**Technical Meaning:** Stage 8: takes object files (machine code plus a **symbol table** of what each defines and needs, plus **relocations** marking placeholder addresses) and resolves every undefined symbol against a definition, patching the placeholders. Static linking copies library code in; dynamic linking records a dependency to be bound at load time.
+
+**Why It Matters:** It is why "undefined reference to `foo`" is a *link* error — each file compiled fine alone. And a JS bundler does exactly this job on modules, so **bundling is static linking**, externals and import maps are dynamic linking, code splitting is lazy dynamic loading, and tree-shaking is its dead-code elimination over a closed world.
+
+Related notes: [[32 - Compilation and Machine Foundations/12 - Compiled vs Interpreted and Every Stage Between|Compiled vs Interpreted, and Every Stage Between]], [[10 - Modules/07 - Tree Shaking and Code Splitting|Tree Shaking and Code Splitting]]
+
+### Tree-Walking Interpreter
+
+**Plain English:** Running a program by recursing over its syntax tree, with no bytecode at all.
+
+**Technical Meaning:** An implementation strategy that stops after semantic analysis and evaluates the AST directly, one node at a time. Simplest possible backend and the slowest, because every operation pays a node-type dispatch and there is no IR to optimize. Ruby before 1.9 worked this way; so do most toy languages and shells.
+
+**Why It Matters:** It is almost certainly a strategy you have implemented without naming it — any time you have evaluated a filter expression, permission rule, formula or JSON-defined condition by recursing over its structure. The fix when it gets slow is to stop re-walking: compile once into closures.
+
+Related notes: [[32 - Compilation and Machine Foundations/12 - Compiled vs Interpreted and Every Stage Between|Compiled vs Interpreted, and Every Stage Between]], [[32 - Compilation and Machine Foundations/09 - Interpreters Dispatch and the Two Stacks|Interpreters, Dispatch and the Two Stacks]]
+
+### Fetch-Decode-Execute
+
+**Plain English:** The only loop a CPU ever runs.
+
+**Technical Meaning:** Stage 10: fetch the instruction at the program counter, decode it — the opcode bits physically select which functional units activate — execute it, update the program counter, repeat. No software is involved. Real cores overlap many of these at once via pipelining, superscalar issue, branch prediction and speculative execution.
+
+**Why It Matters:** It is the layer every other stage is preparing for, and the reason two costs in this vault are real rather than theoretical: branch predictability (why V8's threaded dispatch beats a central switch) and memory locality (why cache lines dominate bulk loops).
+
+Related notes: [[32 - Compilation and Machine Foundations/12 - Compiled vs Interpreted and Every Stage Between|Compiled vs Interpreted, and Every Stage Between]], [[32 - Compilation and Machine Foundations/07 - Registers Caches and RAM|Registers, Caches and RAM]]

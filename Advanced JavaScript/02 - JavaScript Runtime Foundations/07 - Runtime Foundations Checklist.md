@@ -169,6 +169,7 @@ timer
 - [ ] I can explain `SharedArrayBuffer` security requirements and COOP/COEP.
 - [ ] I can name V8's compilation tiers and explain hidden classes and inline caches without hand-waving.
 - [ ] I can explain structured clone limits and when to transfer instead of copy.
+- [ ] (deep-dive) I can correct "the interpreter loops over the bytecode" with threaded dispatch, and explain why a function called once can still reach TurboFan.
 
 <details>
 <summary>Show answer</summary>
@@ -187,5 +188,6 @@ JavaScript source is parsed and executed by an engine inside a host runtime. The
 - [[02 - JavaScript Runtime Foundations/04 - Call Stack|Call Stack]]
 - [[02 - JavaScript Runtime Foundations/05 - Memory Heap|Memory Heap]]
 - [[02 - JavaScript Runtime Foundations/06 - Realm Agent and Job Queue|Realm Agent and Job Queue]]
+- [[02 - JavaScript Runtime Foundations/09 - Bytecode Dispatch and Tier-Up|Bytecode Dispatch and Tier-Up]]
 - [[09 - Event Loop Advanced/02 - Tasks vs Microtasks|Tasks vs Microtasks]]
 - [[13 - Performance and Memory/03 - Memory Leaks|Memory Leaks]]

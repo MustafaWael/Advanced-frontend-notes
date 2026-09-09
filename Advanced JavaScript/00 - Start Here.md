@@ -71,12 +71,13 @@ Advanced JavaScript/
   29 - Frontend System Design/
   30 - Backend System Design/
   31 - Low Level Design/
+  32 - Compilation and Machine Foundations/
   90 - Labs/
   98 - Vault Operations/
   99 - Glossary.md
 ```
 
-The early modules teach the runtime model. The middle modules teach language mechanisms. The later modules force those mechanisms through React, Next.js, production scenarios, interviews, and revision. Modules 19–25 (folder numbers, not study order) go deeper on the browser platform, network/security, React internals, Next.js, TypeScript, testing, and accessibility — the [[01 - Roadmap|Roadmap]] slots them into the correct logical study order (19 after the Event Loop, 20 after Error Handling, 21 and 22 after JavaScript in React, 23–25 as the production-craft layer on top). Modules 26–29 extend into how the web works, tooling, application architecture, and frontend system design; modules 30–31 add backend system design and low-level design — not to turn you into a backend engineer, but because caching, contention, consistency, and design patterns are your frontend knowledge one scale up (each note carries a "Frontend mirror"). `90 - Labs` holds build briefs that turn notes into hands-on practice; `98 - Vault Operations` holds templates and vault housekeeping.
+The early modules teach the runtime model. The middle modules teach language mechanisms. The later modules force those mechanisms through React, Next.js, production scenarios, interviews, and revision. Modules 19–25 (folder numbers, not study order) go deeper on the browser platform, network/security, React internals, Next.js, TypeScript, testing, and accessibility — the [[01 - Roadmap|Roadmap]] slots them into the correct logical study order (19 after the Event Loop, 20 after Error Handling, 21 and 22 after JavaScript in React, 23–25 as the production-craft layer on top). Modules 26–29 extend into how the web works, tooling, application architecture, and frontend system design; modules 30–31 add backend system design and low-level design — not to turn you into a backend engineer, but because caching, contention, consistency, and design patterns are your frontend knowledge one scale up (each note carries a "Frontend mirror"). Module 32 sits outside the interview path entirely: it is the machine layer *below* the engine notes — bytecode to machine code, instruction encodings, LLVM, AOT vs JIT, the CPU and the memory hierarchy — and exists so that words like "compiled" and "register" stop being placeholders. Read it out of curiosity, never instead of the modules above. `90 - Labs` holds build briefs that turn notes into hands-on practice; `98 - Vault Operations` holds templates and vault housekeeping.
 
 ## Source Hierarchy
 

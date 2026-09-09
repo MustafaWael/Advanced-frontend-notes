@@ -25,6 +25,7 @@ How to work a lab:
 4. [[90 - Labs/04 - Next Cached Dashboard Mutation Lab|Next.js Cached Dashboard Mutation]] — tag-based caching with correct invalidation, proven by tests.
 5. [[90 - Labs/05 - Code Review Lab - The Search Results PR|Code Review Lab: The Search Results PR]] — a different format: review a plausible teammate PR with 8 planted bugs, name each mechanism, then grade yourself against the hidden model review.
 6. [[90 - Labs/06 - Frontend System Design Round Lab|Frontend System Design Round Lab]] — a different format: run a timed RADIO design round out loud, then grade your walkthrough against a hidden model outline. Rehearses the design interview, not a build.
+7. [[90 - Labs/07 - Bytecode VM Lab|Build a Bytecode VM]] — `#deep-dive`, **off the interview path**: compile an AST to stack IR and to register IR, write both VMs, add liveness analysis with spilling, then emit real assembly. 6-10 hours. Do not start it while `#must-know` notes are still `not-started`.
 
 ## Prerequisite Map
 
@@ -36,6 +37,7 @@ How to work a lab:
 | 04 | [[22 - Next.js Deep Dive/02 - The Caching Layers|Caching Layers]], [[22 - Next.js Deep Dive/03 - Revalidation|Revalidation]], [[22 - Next.js Deep Dive/04 - Server Actions|Server Actions]], [[24 - Testing and Quality/08 - Testing Nextjs Boundaries|Testing Next Boundaries]], [[29 - Frontend System Design/10 - State Normalization and Optimistic Updates|Optimistic Updates]], [[30 - Backend System Design/05 - Caching|Backend Caching]] |
 | 05 | [[17 - Practical Frontend Scenarios/03 - Handling Race Conditions|Race Conditions]], [[21 - React Internals and Patterns/02 - Reconciliation and Keys|Reconciliation and Keys]], [[20 - Network and Security/05 - XSS|XSS]], [[11 - Error Handling/06 - API Error Handling Patterns|API Error Handling]] |
 | 06 | [[29 - Frontend System Design/01 - The Frontend System Design Framework|RADIO Framework]], [[29 - Frontend System Design/03 - Frontend System Design Checklist|FSD Checklist]], [[29 - Frontend System Design/08 - Frontend Performance for System Design|Performance for System Design]], [[29 - Frontend System Design/14 - Accessibility in System Design|A11y in System Design]] |
+| 07 | [[32 - Compilation and Machine Foundations/01 - From Source Text to Silicon|Source to Silicon]], [[32 - Compilation and Machine Foundations/02 - Stack Register and Accumulator Bytecode|Stack vs Register Bytecode]], [[32 - Compilation and Machine Foundations/09 - Interpreters Dispatch and the Two Stacks|Interpreters and Dispatch]], [[02 - JavaScript Runtime Foundations/09 - Bytecode Dispatch and Tier-Up|Bytecode Dispatch and Tier-Up]] |
 
 ## Related Notes
 
@@ -44,4 +46,5 @@ How to work a lab:
 - [[29 - Frontend System Design/00 - Frontend System Design MOC|Frontend System Design MOC]]
 - [[30 - Backend System Design/00 - Backend System Design MOC|Backend System Design MOC]]
 - [[31 - Low Level Design/00 - Low Level Design MOC|Low Level Design MOC]]
+- [[32 - Compilation and Machine Foundations/00 - Compilation and Machine Foundations MOC|Compilation and Machine Foundations MOC]]
 - [[01 - Roadmap|Roadmap]]

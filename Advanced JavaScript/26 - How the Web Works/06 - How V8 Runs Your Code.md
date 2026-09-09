@@ -110,6 +110,7 @@ Deeper answer:
 ## Related Notes
 
 - [[02 - JavaScript Runtime Foundations/02 - JavaScript Engine and Runtime|JavaScript Engine and Runtime]]
+- [[02 - JavaScript Runtime Foundations/09 - Bytecode Dispatch and Tier-Up|Bytecode Dispatch and Tier-Up]] — one level deeper: how the interpreter dispatches and what actually triggers tier-up.
 - [[02 - JavaScript Runtime Foundations/05 - Memory Heap|Memory Heap]]
 - [[13 - Performance and Memory/06 - Memoization and Expensive Computations|Memoization and Expensive Computations]]
 - [[26 - How the Web Works/05 - Engines Landscape|Engines Landscape]]

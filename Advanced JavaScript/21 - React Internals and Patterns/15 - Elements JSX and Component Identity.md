@@ -41,6 +41,8 @@ React.createElement(Button, { size: "lg" }, "Hi");
 
 Consequences that follow immediately: JSX is optional (you could write the calls by hand), attributes are just object properties (hence `className`, `htmlFor`), `{expr}` slots are just arguments, and **children are ordinary values** — an element, an array, a string, a function. There is no template language; it's all JavaScript expressions producing objects.
 
+Two details worth knowing about the automatic runtime, since they show up in compiled output you'll read in a debugger: the compiler **auto-injects the `react/jsx-runtime` import**, which is why React 17+ code no longer needs `import React from 'react'` just to use JSX; and it emits **`jsxs`** rather than `jsx` when an element has multiple static children, which skips a runtime check `jsx` performs for the single-child case. Also note that `key` is *not* an ordinary prop in the automatic runtime — it is passed as a separate third argument, `jsx(type, props, key)`, which is why a `key` never reaches your component's `props`.
+
 ## 2. An Element Is a Plain, Immutable Object
 
 What those calls return is a **React element** — a cheap, plain JS object *describing* what you want on screen:

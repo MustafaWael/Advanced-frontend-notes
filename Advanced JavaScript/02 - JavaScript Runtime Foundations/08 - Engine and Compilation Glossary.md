@@ -50,7 +50,12 @@ Compiling is expensive and most functions run only a few times, so engines don't
 - **Hot path / hot code:** code that runs many times (a loop body, a constantly-called function). "Hot" = worth spending compile effort on. Cold code isn't.
 - **Baseline compiler:** compiles quickly to *okay* machine code with no cleverness — a fast step up from the interpreter. (V8's is **Sparkplug**.)
 - **Optimizing compiler:** takes real time to produce *excellent* machine code, only for hot code. (V8: **Maglev** = fast/good-enough, **TurboFan** = slow/best.)
-- **Tier up / tiering:** promoting a function to a fancier compiler once it proves it's hot. "Tiers up after ~8 invocations" = after ~8 calls, the next tier kicks in.
+- **Tier up / tiering:** promoting a function to a fancier compiler once it proves it's hot.
+- **Interrupt budget:** how "hot" is actually measured — a per-function allowance scaled to its bytecode length, charged at function entry *and* at loop back-edges. At zero, the engine picks a tier. Not a plain call counter, which is why a function called once with a big loop still gets optimized. Avoid quoting fixed thresholds like "~8 invocations"; the numbers move between V8 versions.
+- **Back-edge:** the jump from the end of a loop body back to its start (V8's `JumpLoop` bytecode). Charging the budget here is what makes loops count toward tier-up.
+- **OSR (on-stack replacement):** swapping a running function to a higher tier *without waiting for it to return* — compile an entry point at the loop header, move live values into the new frame, jump in. Your loop changes tiers between two iterations.
+- **Threaded dispatch:** how the interpreter runs bytecode — each opcode's handler ends by tail-jumping directly into the next handler. There is no interpreter loop and no central `switch`.
+- **Bytecode flushing:** discarding a cold function's bytecode (not just its machine code) under memory pressure, to be regenerated from the source text if it's called again.
 - **Type feedback (runtime feedback):** as the interpreter runs, it records what *actually* flows through your code ("this has always been a number," "this object always has these fields"). Optimizing compilers bet on these observations.
 - **Warmup:** the period before a function has run enough to be optimized; it runs slower during this time. (Why a freshly-deployed SSR server is slow for a minute.)
 - **Deoptimization (deopt / bailout):** when an optimized function's bet turns out wrong ("assumed number, got string"), the engine discards the optimized code and drops back to a slower tier.

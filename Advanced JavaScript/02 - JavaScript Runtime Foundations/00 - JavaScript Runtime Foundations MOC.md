@@ -27,6 +27,8 @@ This module teaches the machine model behind every JavaScript line you write: wh
 ## Companion References
 
 - [[02 - JavaScript Runtime Foundations/08 - Engine and Compilation Glossary|Engine and Compilation Glossary]] — plain-English lookup for engine jargon (bytecode, tiers, deopt, hidden classes, inline caches); read before note 02 if engine internals are new.
+- [[02 - JavaScript Runtime Foundations/09 - Bytecode Dispatch and Tier-Up|Bytecode Dispatch and Tier-Up]] — deep-dive under note 02: threaded dispatch, pre-compiled handlers, the interrupt budget, on-stack replacement, bytecode flushing. Optional for interview readiness; read it when "the interpreter runs the bytecode" stops feeling like an explanation.
+- [[32 - Compilation and Machine Foundations/00 - Compilation and Machine Foundations MOC|Compilation and Machine Foundations MOC]] — the layer *below* this module: bytecode to machine code, stack vs register encodings, LLVM, AOT vs JIT, the CPU and the memory hierarchy. Entirely optional for interviews; read it when "compiled to machine code" stops feeling like an explanation.
 
 ## You're Done When
 
@@ -41,3 +43,4 @@ This module teaches the machine model behind every JavaScript line you write: wh
 - [ ] I can name the TC39 stages and explain what WinterTC standardizes across server runtimes.
 - [ ] I can explain structured clone limits, transfer vs copy for large buffers, and why `Atomics.wait` is banned on the main thread.
 - [ ] I can answer "what happens when JavaScript runs code?" in two minutes using stack, heap, jobs, tasks, and host APIs.
+- [ ] (deep-dive) I can explain that there is no interpreter loop, that bytecode handlers ship pre-compiled in the browser binary, and that tier-up runs on a bytecode-size-scaled budget charged by function entries and loop back-edges.
