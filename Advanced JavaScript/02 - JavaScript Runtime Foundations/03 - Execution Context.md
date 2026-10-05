@@ -96,13 +96,13 @@ Here is the part of the record that answers each question. Labels follow the vau
 
 The parts, one per question *(specification, ECMAScript §9.4, in plain words)*:
 
-| Question | Part | What it does |
-| --- | --- | --- |
-| Names | **LexicalEnvironment** | Points to the table where name lookup starts right now (the current block's `let`, `const` and `class`), linked outward. |
-| Names (`var`) | **VariableEnvironment** | Points to the function-level (or script-level) table that holds `var`s. It stays put when you enter a block. |
-| `this` | *no separate part* | Stored in tables of names: a regular function's table holds its `this`, set by the call. Lookup walks outward to find it; arrow functions' tables have none. |
-| Built-ins | **Realm** | Which built-ins (`Array`, `Object`…) and which global object the code uses. |
-| Where we are | **Code evaluation state** | Where execution is, so a generator or async function can pause and resume at the same spot. |
+| Question      | Part                      | What it does                                                                                                                                                 |
+| ------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Names         | **LexicalEnvironment**    | Points to the table where name lookup starts right now (the current block's `let`, `const` and `class`), linked outward.                                     |
+| Names (`var`) | **VariableEnvironment**   | Points to the function-level (or script-level) table that holds `var`s. It stays put when you enter a block.                                                 |
+| `this`        | *no separate part*        | Stored in tables of names: a regular function's table holds its `this`, set by the call. Lookup walks outward to find it; arrow functions' tables have none. |
+| Built-ins     | **Realm**                 | Which built-ins (`Array`, `Object`…) and which global object the code uses.                                                                                  |
+| Where we are  | **Code evaluation state** | Where execution is, so a generator or async function can pause and resume at the same spot.                                                                  |
 
 The spec lists a few more parts (Function, ScriptOrModule, PrivateEnvironment, and Generator) that this note doesn't need. Older articles show `this` as its own part, ThisBinding: that's the ES5 layout. Since ES2015, `this` lives in the tables of names, which is how arrow functions borrow it (§8).
 
