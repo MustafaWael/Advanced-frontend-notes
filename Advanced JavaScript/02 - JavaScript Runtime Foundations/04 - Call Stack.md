@@ -21,7 +21,7 @@ status: not-started
 
 ## 1. Simple Explanation
 
-The call stack is the stack of active execution contexts. When a function is called, a context is pushed. When the function returns or throws, that context is popped.
+The call stack is the stack of active [[02 - JavaScript Runtime Foundations/03 - Execution Context|execution contexts]]. When a function is called, a context is pushed. When the function returns or throws, that context is popped.
 
 It is last-in, first-out: the most recent call must finish before the caller can continue.
 

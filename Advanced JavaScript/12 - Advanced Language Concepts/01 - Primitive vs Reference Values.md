@@ -259,7 +259,7 @@ function ProductTable({ products }: { products: Product[] }) {
 }
 ```
 
-Works/fails because the prop is a **reference to the same array object** the parent owns — mutating through any reference mutates the one shared object. Same trap with `reverse` and `splice`; prefer `toSorted`/`toReversed` where available.
+What this shows: the prop is a **reference to the same array object** the parent owns, so mutating through any reference mutates the one shared object. Same trap with `reverse` and `splice`; prefer `toSorted`/`toReversed` where available.
 
 ### Shared module-level default config
 

@@ -35,7 +35,7 @@ Related notes: [[02 - JavaScript Runtime Foundations/01 - ECMAScript vs JavaScri
 
 Strong answer:
 
-An execution context is the runtime record used to execute code. It includes lexical environment information, variable environment information, and the current `this` binding for that context.
+An execution context is the runtime record used to execute code. It includes lexical environment information, variable environment information, its realm, and its evaluation state. The current `this` is found through its environments: a regular function's environment record holds it.
 
 Production angle:
 

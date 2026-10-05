@@ -42,7 +42,7 @@ This is the failure mode that has actually cost me. A chat answer once described
 
 ## Skills to use
 
-Five vault-aware skills live in `.claude/skills/` — prefer them over improvising:
+Six vault-aware skills live in `.claude/skills/` (mirrored in `.agents/skills/`) — prefer them over improvising:
 
 | Skill | When |
 | --- | --- |
@@ -51,3 +51,4 @@ Five vault-aware skills live in `.claude/skills/` — prefer them over improvisi
 | `lab-runner` | running a build lab from `90 - Labs` |
 | `vault-note-authoring` | drafting a new concept note, lab, or scenario |
 | `add-use-cases` | adding real-world use cases to an existing note |
+| `human-first-guides` | writing, upgrading or reviewing a note so a human can follow it: unexplained terms, missing primers, disconnected concepts, missing examples. Use with `vault-note-authoring` and `add-use-cases`; see `CLAUDE.md` for when to invoke it |

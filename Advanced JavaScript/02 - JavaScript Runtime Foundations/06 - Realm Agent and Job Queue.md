@@ -30,7 +30,7 @@ status: not-started
 
 ## 1. Simple Explanation
 
-A Realm is a JavaScript world with its own global object and intrinsic objects. An Agent is an independent execution unit with its own execution context stack. A Job is a queued unit of ECMAScript work, such as a promise reaction.
+A Realm is a JavaScript world with its own global object and intrinsic objects. An Agent is an independent execution unit with its own [[02 - JavaScript Runtime Foundations/03 - Execution Context|execution context]] stack. A Job is a queued unit of ECMAScript work, such as a promise reaction.
 
 These terms are more advanced, but they explain real bugs involving iframes, workers, promises, and microtask ordering.
 
@@ -65,7 +65,7 @@ console.log(iframeArray instanceof Array); // false in many cross-realm cases
 console.log(Array.isArray(iframeArray));   // true
 ```
 
-`instanceof Array` checks against the current realm's `Array.prototype`. The iframe array was created with the iframe realm's `Array` constructor. `Array.isArray` is the safer cross-realm check.
+`instanceof Array` checks against the current realm's `Array.prototype`. The iframe array was created with the iframe realm's `Array` constructor. `Array.isArray` is the safer cross-realm check. Every execution context records the realm its code comes from, and a name like `Array` is looked up outward until that realm's global scope, which is why code in each frame gets its own `Array` (see [[02 - JavaScript Runtime Foundations/03 - Execution Context|Execution Context]], §3).
 
 ## 4. Agent
 
@@ -288,7 +288,7 @@ function validatePayload(payload) {
 }
 ```
 
-This can fail when `payload.items` comes from an iframe or embedded remote with a different realm. The array is real, but it was created by another realm's `Array` constructor.
+This can fail when `payload.items` was created in another realm and handed over directly, for example by a same-origin iframe (or a micro-frontend running inside one) that calls into the parent page with its own arrays. The array is real, but it was created by another realm's `Array` constructor. Data sent with `postMessage` doesn't hit this bug: structured clone rebuilds it in the receiving realm, so `instanceof Array` passes there.
 
 Safer check:
 
@@ -354,3 +354,4 @@ function validatePayload(payload) {
 - [[12 - Advanced Language Concepts/08 - Iterators and Generators|Iterators and Generators]]
 - [[13 - Performance and Memory/03 - Memory Leaks|Memory Leaks]]
 - [[19 - DOM and Browser APIs/09 - Web Workers and Offloading Work|Web Workers and Offloading Work]]
+- [[02 - JavaScript Runtime Foundations/03 - Execution Context|Execution Context]]

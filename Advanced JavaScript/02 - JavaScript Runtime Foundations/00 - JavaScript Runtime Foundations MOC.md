@@ -5,7 +5,7 @@ tags:
   - runtime
 module: 02 - JavaScript Runtime Foundations
 priority: must-know
-status: solid
+status: learning
 ---
 
 # JavaScript Runtime Foundations MOC
@@ -37,7 +37,7 @@ This module teaches the machine model behind every JavaScript line you write: wh
 
 - [ ] I can explain ECMAScript as the spec and JavaScript as host implementations, and sort features into language vs host (DOM, `fetch`, timers).
 - [ ] I can define engine vs runtime in one sentence and describe the parse, compile, optimize, deoptimize pipeline.
-- [ ] I can explain an execution context's parts (lexical environment, variable environment, `this`, realm) and connect it to hoisting, TDZ, and closures.
+- [ ] I can explain an execution context's parts (lexical environment, variable environment, realm, evaluation state), say where `this` is found, and connect it to hoisting, TDZ, and closures.
 - [ ] I can draw the call stack for nested calls, explain run-to-completion, and connect long synchronous work to blocked input and rendering.
 - [ ] I can explain heap reachability, name common frontend retaining paths, and connect effect cleanup to memory lifetime.
 - [ ] I can explain realms (why `Array.isArray` beats `instanceof Array` across iframes) and agents (workers, `SharedArrayBuffer` with COOP/COEP).

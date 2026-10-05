@@ -303,7 +303,7 @@ products.push(optimisticProduct); // silently corrupts the cache
 queryClient.setQueryData(["products"], old => [...(old ?? []), optimisticProduct]);
 ```
 
-Works/fails on array identity: React Query (and Redux, Zustand, SWR) detect changes by comparing references. `push` keeps the same reference, so no subscriber re-renders — and worse, the "clean" cache is now polluted before any rollback logic runs.
+What this shows: the bug is about array identity. React Query (and Redux, Zustand, SWR) detect changes by comparing references. `push` keeps the same reference, so no subscriber re-renders — and worse, the "clean" cache is now polluted before any rollback logic runs.
 
 > [!warning] Cache reads are live references
 > Anything returned by `getQueryData`, a Redux selector, or a Zustand store is shared. Treat it as frozen; produce updates with copy-returning methods only.

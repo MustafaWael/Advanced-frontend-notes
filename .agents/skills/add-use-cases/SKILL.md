@@ -22,10 +22,12 @@ Each use case earns its place only if a working developer would nod at it. For e
 - **A scenario title** naming a real feature or system: "Debounced search input", "Auth token refresh queue", "Infinite scroll with IntersectionObserver" — not "Example 1".
 - **The situation**: 1-2 sentences on the product context and why this concept is the load-bearing piece.
 - **A short runnable code example** (modern JS/TS, React/Next.js where natural, 5-20 lines). Realistic identifiers, no `foo`/`bar`. Trim boilerplate that doesn't teach.
-- **The connection**: one sentence naming the exact mechanism from the note that makes the example work or fail.
+- **The connection**: end the case with one plain sentence that starts with "What this shows:" and names the exact mechanism from the note at work in this case. Write it fresh for each case. Never paste a fixed phrase such as "Works/fails because": it ends up copied into notes word for word.
 - Where a footgun exists, add a `> [!warning]` callout; where there's a production pattern worth stealing, `> [!tip]`. Only where they earn their place.
 
 Aim for diversity across the 2-4 cases: different layers (UI event handling, data fetching, state management, tooling/build, Node/server) rather than four variations of the same trick. At least one should be a scenario plausible in the user's daily React/Next.js work.
+
+After the last case, add one line, **What these cases share:**, naming the mechanism they have in common. Seeing one mechanism in several different-looking cases is what lets the reader recognize it in code they haven't seen.
 
 Avoid: contrived counter/todo-list examples (unless the concept genuinely is about state primitives), restating the note's existing Bug→Fix example, and encyclopedic lists without code.
 
@@ -42,6 +44,7 @@ Check whether the note already covers its classic. If it doesn't, add it as the 
 - Never modify frontmatter except: do not touch `status` at all (it's the learner's progress marker).
 - Callout syntax: `> [!warning]` and `> [!tip]`.
 - Keep the note's voice: direct, mechanism-first, no filler.
+- When `human-first-guides` is also in use, this skill decides where the section goes and how many cases it has, and that skill's rule 9 decides how each case connects to the rest of the note.
 
 ## Example shape
 
@@ -59,12 +62,12 @@ useEffect(() => {
 }, []); // missing dep — the closure never updates
 ​```
 
-Works/fails because closures capture **bindings from the creation-time environment** — the effect ran once, so its environment is frozen.
+What this shows: the interval callback keeps the bindings from the render that created it. The effect ran only once, so `filters` stays frozen at its first value.
 
 > [!warning]
 > Adding `filters` to the deps fixes staleness but resets the interval on every change — decide which behavior the product needs.
 
-See [[14 - JavaScript in React and Next.js/03 - Stale Closures in Hooks|Stale Closures in Hooks]].
+See [[14 - JavaScript in React and Next.js/03 - Stale Closures|Stale Closures]].
 ```
 
 ## When invoked on chat questions (no note editing)

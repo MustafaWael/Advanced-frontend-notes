@@ -288,7 +288,7 @@ Related notes: [[09 - Event Loop Advanced/01 - Event Loop Overview|Event Loop Ov
 
 **Plain English:** The runtime record for code currently executing.
 
-**Technical Meaning:** Execution contexts include lexical environment, variable environment, `this` binding, realm, function/module/script references, and evaluation state.
+**Technical Meaning:** Execution contexts include a lexical environment, a variable environment, a realm, function/module/script references, and evaluation state. `this` is not a separate part: since ES2015 it lives in environment records (a regular function's record holds its `this`), and lookup walks outward to find it.
 
 **Why It Matters:** Hoisting, `this`, scope, closures, strict mode, and stack traces all depend on execution context mechanics.
 

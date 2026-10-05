@@ -36,7 +36,7 @@ Use this checklist after studying the runtime foundation module. Do not mark an 
 ## 3. Execution Context
 
 - [ ] I can explain execution context as the runtime record for currently evaluating code.
-- [ ] I can name key parts: lexical environment, variable environment, `this` binding, realm, and evaluation state.
+- [ ] I can name key parts: lexical environment, variable environment, realm, and evaluation state, and explain where `this` lives (in environment records, not as a separate part).
 - [ ] I can explain preparation vs execution without saying code is physically moved.
 - [ ] I can connect execution context to hoisting, TDZ, closures, `this`, and stack traces.
 - [ ] I can explain how React render functions create fresh local bindings on every render.
